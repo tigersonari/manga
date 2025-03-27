@@ -1,7 +1,17 @@
 package br.manga.dto;
 
-public record MangaDTO (String titulo, String sigla, int idEditora) {
-    
+import java.time.LocalDate;
 
-
-}
+public record MangaDTO(
+    String titulo,
+    String isbn,
+    LocalDate lancamento,
+    String sinopse,
+    Integer idEstoque,
+    Integer idGenero,
+    Integer idClassificacao,
+    Integer idEdicao,
+    Integer idEditora,
+    Integer idAutor,
+    Integer idAvaliacao
+) {}

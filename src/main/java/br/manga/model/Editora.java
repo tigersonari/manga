@@ -1,47 +1,60 @@
 package br.manga.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-public enum Editora {
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
-    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@Entity
+public class Editora extends DefaultEntity{
+
     
-    //conjunto de constantes, não é alterável
-    KODANSHA(1, "Kodansha"), 
-    SHUEISHA(2,"Shueisha");
+    @Column(nullable = false)
+    private String nome;
 
-    private final int ID; //deve ser maiusculo por ser uma constante
-    private final String NOME; //ps:e pesquisae sobre o final
+    @Column(nullable = false)
+    private String sede;
 
-    //ps: o enumerador é fixo e não pode possuir o estado 
+    @Column(nullable = false)
+    private LocalDate fundacao;
 
-    //construtor para alterar os valores das constantes, elas só poderão ser alteradas se houver esse construtor
-    //todo construtor é PRIVATE
-    
-    private Editora(int id, String nome){
-        this.ID = id;
-        this.NOME = nome;
+    @OneToMany(mappedBy = "editora", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Manga> manga = new ArrayList<>();
+
+    public String getNome() {
+        return nome;
     }
 
-    public int getId(){
-        return ID;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getNome(){
-        return NOME;
+    public String getSede() {
+        return sede;
     }
 
-    public static Editora valueOf(Integer id){
+    public void setSede(String sede) {
+        this.sede = sede;
+    }
 
-           if (id == null)
-               return null;
+    public LocalDate getFundacao() {
+        return fundacao;
+    }
 
-            for (Editora r : Editora.values()){
-                if (r.getId() == id)
-                    return r;
-            }
-            return null;
+    public void setFundacao(LocalDate fundacao) {
+        this.fundacao = fundacao;
+    }
 
+    public List<Manga> getManga() {
+        return manga;
+    }
+
+    public void setManga(List<Manga> manga) {
+        this.manga = manga;
     }
 
 }

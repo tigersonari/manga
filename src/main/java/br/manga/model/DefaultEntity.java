@@ -16,17 +16,17 @@ public class DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDateTime dataCadastro;
-    private LocalDateTime dataAlteracao;
+    private LocalDateTime dataMangaCadastro;
+    private LocalDateTime dataMangaAlteracao;
 
     @PrePersist
-    private void registrarDataCadastro() {
-        dataCadastro = LocalDateTime.now();
+    private void registrarDataMangaCadastro() {
+        dataMangaCadastro = LocalDateTime.now();
     }
 
     @PreUpdate
-    private void registrarDataAlteracao() {
-        dataAlteracao = LocalDateTime.now();
+    private void registrarDataMangaAlteracao() {
+        dataMangaAlteracao = LocalDateTime.now();
     }
 
     /*quando se altera o mangá, altera-se também sua herança, seu defaultEntity. pois mangá é um defaultEntity */
@@ -39,20 +39,20 @@ public class DefaultEntity {
         this.id = id;
     }
 
-    public LocalDateTime getDataCadastro() {
-        return dataCadastro;
+    public LocalDateTime getDataMangaCadastro() {
+        return dataMangaCadastro;
     }
 
-    public void setDataCadastro(LocalDateTime dataCadastro) {
-        this.dataCadastro = dataCadastro;
+    public void setDataMangaCadastro(LocalDateTime dataMangaCadastro) {
+        this.dataMangaCadastro = dataMangaCadastro;
     }
 
-    public LocalDateTime getDataAlteracao() {
-        return dataAlteracao;
+    public LocalDateTime getDataMangaAlteracao() {
+        return dataMangaAlteracao;
     }
 
-    public void setDataAlteracao(LocalDateTime dataAlteracao) {
-        this.dataAlteracao = dataAlteracao;
+    public void setDataMangaAlteracao(LocalDateTime dataMangaAlteracao) {
+        this.dataMangaAlteracao = dataMangaAlteracao;
     }
 
     
