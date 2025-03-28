@@ -1,5 +1,7 @@
 package br.manga.repository;
 
+import java.util.List;
+
 import br.manga.model.Autor;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,6 +12,10 @@ public class AutorRepository implements PanacheRepository<Autor> {
     
     public Autor findByNome(String nome) {
         return find("nome", nome).firstResult();
+    }
+
+    public List<Autor> findByNacionalidade(String nacionalidade) {
+        return find("nacionalidade", nacionalidade).list();
     }
 
      @Override

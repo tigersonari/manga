@@ -11,7 +11,7 @@ public interface EditoraService {
     void update(Long id, EditoraDTO editora);
     void delete(Long id);
     EditoraResponseDTO findById(Long id);
-    EditoraResponseDTO findByNome(String nome);
+    List<EditoraResponseDTO> findByNome(String nome);  
     List<EditoraResponseDTO> findBySede(String sede);
     List<EditoraResponseDTO> findByFundacao(LocalDate fundacao);
     List<EditoraResponseDTO> findAll();

@@ -7,37 +7,31 @@ import br.manga.model.Manga;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
+
+
 @ApplicationScoped
-public class MangaRepository implements PanacheRepository<Manga>{
+public class MangaRepository implements PanacheRepository<Manga> {
 
-    public MangaRepository() {
+    public Manga findByTitulo(String titulo) {
+        return find("titulo", titulo).firstResult(); 
     }
-    
 
-        @Override
-    public Manga findById(Long id){
-        return find("SELECT m FROM Manga m WHERE m.id =?1 ", id).firstResult();
-     }
+    public List<Manga> findMangasByAutor(String autor) {
+        return find("SELECT m FROM Manga m WHERE m.autor.nome = ?1", autor).list(); 
+    }
 
-    public List<Manga> findByTitulo(String titulo) {
-    return find("SELECT m FROM Manga m WHERE m.titulo LIKE ?1", "%" + titulo + "%").firstResult();
-}
+    // Busca mangas pelo nome da editora
+    public List<Manga> findMangaByEditora(String editora) {
+        return find("SELECT m FROM Manga m WHERE m.editora.nome = ?1", editora).list(); 
+    }
+    public List<Manga> findByGenero(String genero) {
+        return find("SELECT m FROM Manga m WHERE m.genero = ?1", genero).list(); 
+    }
 
-public List<Manga> findByAutor(Long idAutor) {
-    return find("SELECT m FROM Manga m WHERE m.autor.id = ?1", idAutor).firstResult();
-}
-
-public List<Manga> findByEditora(Long idEditora) {
-    return find("SELECT m FROM Manga m WHERE m.editora.id = ?1", idEditora).firstResult();
-}
-
-public List<Manga> findByGenero(Long idGenero) {
-    return find("SELECT m FROM Manga m WHERE m.genero.id = ?1", idGenero).list();
-}
-
-public List<Manga> findAllMangas() {
-    return listAll();
+    public List<Manga> findAllMangas() {
+        return listAll();
+    }
 }
 
 
-}
+
