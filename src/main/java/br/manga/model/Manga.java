@@ -20,7 +20,7 @@ public class Manga extends DefaultEntity{
     @Column(nullable = false)
     private String titulo;
 
-    @Column(length=13,nullable = false)
+    @Column(length=13,nullable = false, unique = true)
     private String isbn;
 
     @Column(nullable = false)

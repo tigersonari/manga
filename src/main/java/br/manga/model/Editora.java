@@ -13,7 +13,7 @@ import jakarta.persistence.OneToMany;
 public class Editora extends DefaultEntity{
 
     
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nome;
 
     @Column(nullable = false)
