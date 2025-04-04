@@ -11,6 +11,6 @@ public interface UsuarioService {
     void delete(Long id);
     UsuarioResponseDTO findById(Long id);
     UsuarioResponseDTO findByEmail(String email);
-    List<UsuarioResponseDTO> findByNome(String nome);
+    UsuarioResponseDTO findByNome(String nome);
     List<UsuarioResponseDTO> findAll();
 }

@@ -60,10 +60,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<UsuarioResponseDTO> findByNome(String nome) {
-        return usuarioRepository.findByNome(nome)
-                .stream().map(UsuarioResponseDTO::valueOf)
-                .collect(Collectors.toList());
+    public UsuarioResponseDTO findByNome(String nome) {
+        return UsuarioResponseDTO.valueOf(usuarioRepository.findByNome(nome));
     }
 
 
