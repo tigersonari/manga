@@ -8,7 +8,17 @@ public enum Genero {
     SHOUJO(2),
     SEINEN(3),
     JOSEI(4),
-    ISEKAI(5);
+    ISEKAI(5),
+    AVENTURA(6),
+    ACAO(7),
+    COMEDIA(8),
+    DRAMA(9),
+    FANTASIA(10),
+    MISTERIO(11),
+    ROMANCE(12),
+    MARVEL(13),
+    DC(14),
+    HEROI(15);
 
     private int ID;
 

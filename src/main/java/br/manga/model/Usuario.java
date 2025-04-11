@@ -2,6 +2,8 @@ package br.manga.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Entity
 public class Usuario extends DefaultEntity {
@@ -17,6 +19,9 @@ public class Usuario extends DefaultEntity {
 
     @Column(nullable = false)
     private String endereco;
+
+     @Enumerated(EnumType.STRING)
+    private TipoUsuario tipoUsuario;
 
 
     public String getNome() {
@@ -52,4 +57,11 @@ public class Usuario extends DefaultEntity {
     }
 
     
+    public TipoUsuario getTipoUsuario() {
+        return tipoUsuario;
+    }
+    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
+    }
+
 }

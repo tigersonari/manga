@@ -1,0 +1,167 @@
+@startuml
+
+package "br.manga.model" {
+
+    class Manga {
+        - titulo : String
+        - isbn : String
+        - lancamento : LocalDate
+        - sinopse : String
+        +genero: Genero
+        +classificacao: Classificacao
+        +edicao: Edicao
+        +avaliacao: Avaliacao
+        +autor: Autor
+        +editora: Editora
+    }
+
+    class Usuario {
+        +id: Long
+        +nome: String
+        +email: String
+        +senha: String
+        +endereco: String
+        +tipoUsuario: TipoUsuario
+    }
+
+   ' class Autor {
+    '    - nome : String
+    '    - nacionalidade : String
+   ' }
+
+   ' class Avaliacao {
+     '   - nota : double
+     '   - comentario : String
+    '}
+
+   ' class Edicao {
+       ' - volume : Integer
+       ' - idioma : String
+       ' - lancamento : LocalDate
+       ' - dimensao : String
+       ' + formato : Formato
+       ' + tipoCapa : TipoCapa
+       ' + status : Status
+    '}
+
+    'class Editora {
+        '- nome : String
+        '- sede : String
+        '- fundacao : LocalDate
+   ' }
+
+    class Entrega {
+        - endereco : String
+        - codigoRastreio : String
+        - statusEntrega : String
+    }
+
+    class Pagamento {
+        - metodoPagamento : String
+        - status : String
+        - dataConfirmacao : LocalDate
+    }
+
+    class Pedido {
+        - numeroPedido : String
+        - data : LocalDate
+        - status : String
+        - valorTotal : double
+        + usuario: Usuario
+    }
+
+    'enum Estoque {
+        'DISPONIVEL
+        'INDISPONIVEL
+    '}
+
+    'enum Genero {
+       ' SHOUNEN
+        'SHOUJO
+        'SEINEN
+        'JOSEI
+        'ISEKAI
+    '}
+
+    'enum Classificacao {
+       'LIVRE
+        'DEZ_ANOS
+        'DOZE_ANOS
+        'QUATORZE_ANOS
+        'DEZESSEIS_ANOS
+        'DEZOITO_ANOS
+    '}
+
+    'enum Formato {
+        'FISICO
+        'DIGITAL
+    '}
+
+   ' enum TipoCapa {
+        'DURA
+       ' MOLE
+    '}
+
+    'enum Status {
+        'FINALIZADO
+        'EM_ANDAMENTO
+    '}
+
+    ' NOVAS CLASSES E ENUMS ADICIONADOS
+
+    class UsuarioAdmin {
+    }
+
+    enum TipoUsuario {
+        ADMIN
+        CLIENTE
+    }
+
+
+    class DashboardInfo {
+        - totalUsuarios: long
+        - totalMangas: long
+        - totalPedidos: long
+    }
+
+    ' RELACIONAMENTOS EXISTENTES
+    'Manga "1" --> "*" Edicao : contém >
+    'Manga "1" --> "*" Avaliacao : tem >
+    'Manga "*" --> "1" Editora : publicado por >
+    'Manga "*" --> "1" Autor : criado por >
+    
+    'Manga --> Genero
+    'Manga --> Classificacao
+    'Manga --> Estoque
+
+    'Edicao --> Formato
+    'Edicao --> TipoCapa
+    'Edicao --> Status
+
+    'Autor "1" --> "*" Manga : escreve >
+    'Avaliacao "*" --> "1" Manga : refere-se >
+    'Edicao "*" --> "1" Manga : pertence >
+    'Editora "1" --> "*" Manga : publica >
+    Pedido "1" --> "1" Pagamento : possui >
+    Pedido "1" --> "1" Entrega : possui >
+    Pedido "1" --* "*" Manga : contém >
+    UsuarioCliente "1" --> "1" Pedido : faz >
+
+    ' NOVOS RELACIONAMENTOS
+    
+    Usuario --> TipoUsuario
+    TipoUsuario --> UsuarioAdmin
+    TipoUsuario --> UsuarioCliente
+
+    UsuarioAdmin --> DashboardInfo: acessa >
+    UsuarioAdmin --> Pedido : acessa > 
+    UsuarioAdmin --> Manga : gerencia >
+
+    'Pedido --> StatusPedido
+    'Pagamento --> MetodoPagamento
+    'Pagamento --> StatusPagamento
+    'Entrega --> StatusEntrega
+
+}
+
+@enduml

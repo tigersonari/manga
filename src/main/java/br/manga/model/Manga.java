@@ -37,10 +37,9 @@ public class Manga extends DefaultEntity{
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
-
-
     @Enumerated(EnumType.STRING)
     private Classificacao classificacao;
+    
 
     /*tirar dúvida com professor */
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL, orphanRemoval = true)
