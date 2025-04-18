@@ -1,27 +1,28 @@
 package br.manga.dto;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import br.manga.model.Manga;
 import br.manga.model.Pedido;
-import br.manga.model.Usuario;
 
 public record PedidoResponseDTO(
     Long id,
     Long numeroPedido,
-    LocalDate data,
     String status,
-    List<Manga> mangasComprados,
     Double valorTotal,
-    Usuario usuario
+    String usuario,
+    List<String> mangas,
+    String pagamento
 ) {
     public static PedidoResponseDTO valueOf(Pedido pedido) {
-        if (pedido == null)
-            return null;
+        if (pedido == null) return null;
         return new PedidoResponseDTO(
-            pedido.getId(), pedido.getNumeroPedido(), pedido.getData(), 
-            pedido.getStatus(), pedido.getMangasComprados(), pedido.getValorTotal(), pedido.getUsuario()
+            pedido.getId(),
+            pedido.getNumeroPedido(),
+            pedido.getStatus(),
+            pedido.getValorTotal(),
+            pedido.getUsuario() != null ? pedido.getUsuario().getNome() : null,
+            pedido.getMangasComprados() != null ? pedido.getMangasComprados().stream().map(m -> m.getTitulo()).toList() : null,
+            pedido.getPagamento() != null ? pedido.getPagamento().getMetodoPagamento() : null
         );
     }
 }

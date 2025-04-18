@@ -1,12 +1,12 @@
 package br.manga.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.manga.dto.EntregaDTO;
 import br.manga.dto.EntregaResponseDTO;
 import br.manga.model.Entrega;
 import br.manga.repository.EntregaRepository;
+import br.manga.repository.PedidoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,13 +17,17 @@ public class EntregaServiceImpl implements EntregaService {
     @Inject
     EntregaRepository entregaRepository;
 
+    @Inject
+    PedidoRepository pedidoRepository;
+
     @Override
     @Transactional
-    public EntregaResponseDTO create(EntregaDTO entregaDTO) {
+    public EntregaResponseDTO create(EntregaDTO dto) {
         Entrega entrega = new Entrega();
-        entrega.setEndereco(entregaDTO.endereco());
-        entrega.setCodigoRastreio(entregaDTO.codigoRastreio());
-        entrega.setStatus(entregaDTO.status());
+        entrega.setEndereco(dto.endereco());
+        entrega.setCodigoRastreio(dto.codigoRastreio());
+        entrega.setStatus(dto.status());
+        entrega.setPedido(pedidoRepository.findById(dto.pedidoId()));
 
         entregaRepository.persist(entrega);
         return EntregaResponseDTO.valueOf(entrega);
@@ -31,19 +35,24 @@ public class EntregaServiceImpl implements EntregaService {
 
     @Override
     @Transactional
-    public void update(Long id, EntregaDTO entregaDTO) {
+    public void update(Long id, EntregaDTO dto) {
         Entrega entrega = entregaRepository.findById(id);
-        entrega.setCodigoRastreio(entregaDTO.codigoRastreio());
-        entrega.setStatus(entregaDTO.status());
+        entrega.setEndereco(dto.endereco());
+        entrega.setCodigoRastreio(dto.codigoRastreio());
+        entrega.setStatus(dto.status());
+        entrega.setPedido(pedidoRepository.findById(dto.pedidoId()));
+    }
 
-        entregaRepository.persist(entrega);
+    @Override
+    @Transactional
+    public EntregaResponseDTO findByCodigoRastreio(String codigoRastreio) {
+        return EntregaResponseDTO.valueOf(entregaRepository.findByCodigoRastreio(codigoRastreio));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        Entrega entrega = entregaRepository.findById(id);
-        entregaRepository.delete(entrega);
+        entregaRepository.deleteById(id);
     }
 
     @Override
@@ -52,26 +61,16 @@ public class EntregaServiceImpl implements EntregaService {
     }
 
     @Override
-    public EntregaResponseDTO findByCodigoRastreio(String codigoRastreio) {
-        return EntregaResponseDTO.valueOf(entregaRepository.findByCodigoRastreio(codigoRastreio));
+    public List<EntregaResponseDTO> findByPedido(Long pedidoId) {
+        return entregaRepository.findByPedido(pedidoId).stream()
+            .map(EntregaResponseDTO::valueOf)
+            .toList();
     }
-
-    @Override
-    public List<EntregaResponseDTO> findByStatus(String status) {
-        return entregaRepository.findByStatus(status)
-                .stream().map(EntregaResponseDTO::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public EntregaResponseDTO findByPedido(Long idPedido) {
-        return EntregaResponseDTO.valueOf((Entrega) entregaRepository.findByPedido(idPedido));
-    }/*? duvida */
 
     @Override
     public List<EntregaResponseDTO> findAll() {
-        return entregaRepository.findAllEntregas()
-                .stream().map(EntregaResponseDTO::valueOf)
-                .collect(Collectors.toList());
+        return entregaRepository.listAll().stream()
+            .map(EntregaResponseDTO::valueOf)
+            .toList();
     }
 }

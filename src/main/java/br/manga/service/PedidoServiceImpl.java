@@ -5,8 +5,12 @@ import java.util.stream.Collectors;
 
 import br.manga.dto.PedidoDTO;
 import br.manga.dto.PedidoResponseDTO;
+import br.manga.model.Manga;
 import br.manga.model.Pedido;
+import br.manga.repository.MangaRepository;
+import br.manga.repository.PagamentoRepository;
 import br.manga.repository.PedidoRepository;
+import br.manga.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,15 +21,34 @@ public class PedidoServiceImpl implements PedidoService {
     @Inject
     PedidoRepository pedidoRepository;
 
+    @Inject
+    UsuarioRepository usuarioRepository;
+
+    @Inject
+    MangaRepository mangaRepository;
+
+    @Inject
+    PagamentoRepository pagamentoRepository;
+
     @Override
     @Transactional
-    public PedidoResponseDTO create(PedidoDTO pedidoDTO) {
+    public PedidoResponseDTO create(PedidoDTO dto) {
         Pedido pedido = new Pedido();
-        pedido.setNumeroPedido(pedidoDTO.numeroPedido());
-        pedido.setData(pedidoDTO.data());
-        pedido.setStatus(pedidoDTO.status());
-        pedido.setMangasComprados(pedidoDTO.mangasComprados());
-        pedido.setValorTotal(pedidoDTO.valorTotal());
+        pedido.setNumeroPedido(dto.numeroPedido());
+        pedido.setStatus(dto.status());
+        pedido.setValorTotal(dto.valorTotal());
+        pedido.setUsuario(usuarioRepository.findById(dto.idUsuario()));
+
+        if (dto.idsMangas() != null) {
+            List<Manga> mangas = dto.idsMangas().stream()
+                .map(mangaId -> mangaRepository.findById(mangaId))
+                .collect(Collectors.toList());
+            pedido.setMangasComprados(mangas);
+        }
+
+        if (dto.idPagamento() != null) {
+            pedido.setPagamento(pagamentoRepository.findById(dto.idPagamento()));
+        }
 
         pedidoRepository.persist(pedido);
         return PedidoResponseDTO.valueOf(pedido);
@@ -33,17 +56,19 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     @Transactional
-    public void update(Long id, PedidoDTO pedidoDTO) {
+    public void update(Long id, PedidoDTO dto) {
         Pedido pedido = pedidoRepository.findById(id);
-        pedido.setStatus(pedidoDTO.status());
-        pedidoRepository.persist(pedido);
+        pedido.setNumeroPedido(dto.numeroPedido());
+        pedido.setStatus(dto.status());
+        pedido.setValorTotal(dto.valorTotal());
+        pedido.setUsuario(usuarioRepository.findById(dto.idUsuario()));
+
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        Pedido pedido = pedidoRepository.findById(id);
-        pedidoRepository.delete(pedido);
+        pedidoRepository.deleteById(id);
     }
 
     @Override
@@ -52,28 +77,16 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
-    public PedidoResponseDTO findByNumeroPedido(Long numeroPedido) {
-        return PedidoResponseDTO.valueOf(pedidoRepository.findByNumeroPedido(numeroPedido));
-    }
-
-    @Override
-    public List<PedidoResponseDTO> findByStatus(String status) {
-        return pedidoRepository.findByStatus(status)
-                .stream().map(PedidoResponseDTO::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<PedidoResponseDTO> findByUsuario(Long idUsuario) {
-        return pedidoRepository.findByUsuario(idUsuario)
-                .stream().map(PedidoResponseDTO::valueOf)
-                .collect(Collectors.toList());
+        return pedidoRepository.findByUsuario(idUsuario).stream()
+            .map(PedidoResponseDTO::valueOf)
+            .toList();
     }
 
     @Override
     public List<PedidoResponseDTO> findAll() {
-        return pedidoRepository.findAllPedidos()
-                .stream().map(PedidoResponseDTO::valueOf)
-                .collect(Collectors.toList());
+        return pedidoRepository.listAll().stream()
+            .map(PedidoResponseDTO::valueOf)
+            .toList();
     }
 }

@@ -3,10 +3,6 @@ package br.manga.dto;
 import java.time.LocalDate;
 
 import br.manga.model.Edicao;
-import br.manga.model.Formato;
-import br.manga.model.Manga;
-import br.manga.model.Status;
-import br.manga.model.TipoCapa;
 
 public record EdicaoResponseDTO(
     Long id,
@@ -14,17 +10,25 @@ public record EdicaoResponseDTO(
     String idioma,
     LocalDate lancamento,
     String dimensao,
-    Status status,
-    Formato Formato,
-    TipoCapa tipoCapa,
-    Manga manga
+    String titulo,
+    String formato,
+    String tipoCapa,
+    String status,
+    String manga
 ) {
-    
-        public static EdicaoResponseDTO valueOf(Edicao edicao) {
-            if (edicao == null)
-                return null;
-            return new EdicaoResponseDTO(edicao.getId(), edicao.getVolume(), edicao.getIdioma(), edicao.getLancamento(), edicao.getDimensao(),
-            edicao.getStatus(), edicao.getFormato(), edicao.getTipoCapa(), edicao.getManga());
+    public static EdicaoResponseDTO valueOf(Edicao edicao) {
+        if (edicao == null) return null;
+        return new EdicaoResponseDTO(
+            edicao.getId(),
+            edicao.getVolume(),
+            edicao.getIdioma(),
+            edicao.getLancamento(),
+            edicao.getDimensao(),
+            edicao.getTitulo(),
+            edicao.getFormato() != null ? edicao.getFormato().name() : null,
+            edicao.getTipoCapa() != null ? edicao.getTipoCapa().name() : null,
+            edicao.getStatus() != null ? edicao.getStatus().name() : null,
+            edicao.getManga() != null ? edicao.getManga().getTitulo() : null
+        );
     }
-    
 }

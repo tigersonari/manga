@@ -6,12 +6,11 @@ import br.manga.dto.EntregaDTO;
 import br.manga.dto.EntregaResponseDTO;
 
 public interface EntregaService {
-    EntregaResponseDTO create(EntregaDTO entrega);
-    void update(Long id, EntregaDTO entrega);
+    EntregaResponseDTO create(EntregaDTO dto);
+    void update(Long id, EntregaDTO dto);
     void delete(Long id);
     EntregaResponseDTO findById(Long id);
+    List<EntregaResponseDTO> findByPedido(Long idPedido);
     EntregaResponseDTO findByCodigoRastreio(String codigoRastreio);
-    List<EntregaResponseDTO> findByStatus(String status);
-    EntregaResponseDTO findByPedido (Long idPedido);
     List<EntregaResponseDTO> findAll();
 }

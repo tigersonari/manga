@@ -1,7 +1,8 @@
 package br.manga.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record AutorDTO(
-    String nome,
-    String nacionalidade,
-    Integer idManga
-    ) {}
+    @NotBlank String nome,
+    @NotBlank String nacionalidade
+) {}

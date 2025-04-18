@@ -2,9 +2,10 @@ package br.manga.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record EditoraDTO(
-    String nome,
-    String sede,
-    LocalDate fundacao,
-    Integer idManga
-    ) {}
+    @NotBlank String nome,
+    @NotBlank String sede,
+    LocalDate fundacao
+) {}

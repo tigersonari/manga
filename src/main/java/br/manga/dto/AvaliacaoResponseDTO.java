@@ -1,18 +1,20 @@
 package br.manga.dto;
 
 import br.manga.model.Avaliacao;
-import br.manga.model.Manga;
 
 public record AvaliacaoResponseDTO(
+    Long id,
     double nota,
     String comentario,
-    Manga manga
+    String manga
 ) {
-    
-        public static AvaliacaoResponseDTO valueOf(Avaliacao avaliacao) {
-            if (avaliacao == null)
-                return null;
-            return new AvaliacaoResponseDTO(avaliacao.getNota(), avaliacao.getComentario(), avaliacao.getManga());
+    public static AvaliacaoResponseDTO valueOf(Avaliacao avaliacao) {
+        if (avaliacao == null) return null;
+        return new AvaliacaoResponseDTO(
+            avaliacao.getId(),
+            avaliacao.getNota(),
+            avaliacao.getComentario(),
+            avaliacao.getManga() != null ? avaliacao.getManga().getTitulo() : null
+        );
     }
-    
 }

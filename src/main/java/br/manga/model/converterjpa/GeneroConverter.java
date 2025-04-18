@@ -9,16 +9,15 @@ public class GeneroConverter implements AttributeConverter<Genero, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(Genero genero) {
-
-
-            return genero == null ? null : genero.getId();
-
+        return genero == null ? null : genero.getId();
     }
 
     @Override
     public Genero convertToEntityAttribute(Integer id) {
-        return Genero.valueOf(id);
+        if (id == null) return null;
+        for (Genero g : Genero.values()) {
+            if (g.getId() == id) return g;
+        }
+        throw new IllegalArgumentException("ID de Genero inválido: " + id);
     }
-    
 }
-

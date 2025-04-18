@@ -2,13 +2,18 @@ package br.manga.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 public record EdicaoDTO(
-    Integer volume,
-    String idioma,
-    LocalDate lancamento,
-    String dimensao,
-    Integer idFormato,
-    Integer idStatus,
-    Integer idTipoCapa,
-    Integer idManga
-    ) {}
+    @Positive Integer volume,
+    @NotBlank String idioma,
+    @NotNull LocalDate lancamento,
+    @NotBlank String dimensao,
+    @NotBlank String titulo,
+    @NotNull Integer formatoId,
+    @NotNull Integer tipoCapaId,
+    @NotNull Integer statusId,
+    @NotNull Long mangaId
+) {}

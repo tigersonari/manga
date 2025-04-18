@@ -6,11 +6,11 @@ import br.manga.dto.AutorDTO;
 import br.manga.dto.AutorResponseDTO;
 
 public interface AutorService {
-    AutorResponseDTO create(AutorDTO autor);
-    void update(Long id, AutorDTO autor);
+    AutorResponseDTO create(AutorDTO dto);
+    void update(Long id, AutorDTO dto);
     void delete(Long id);
     AutorResponseDTO findById(Long id);
-    AutorResponseDTO findByNome(String nome);
-    List<AutorResponseDTO> findByNacionalidade(String nacionalidade);
+    List<AutorResponseDTO> findByNome(String nome);
     List<AutorResponseDTO> findAll();
+    Object findByNacionalidade(String nacionalidade);
 }

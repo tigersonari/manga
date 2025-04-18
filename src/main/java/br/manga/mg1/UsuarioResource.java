@@ -22,45 +22,34 @@ import jakarta.ws.rs.core.MediaType;
 public class UsuarioResource {
 
     @Inject
-    UsuarioService usuarioService;
+    UsuarioService service;
 
     @POST
-    public UsuarioResponseDTO create(UsuarioDTO usuario) {
-        return usuarioService.create(usuario);
+    public UsuarioResponseDTO create(UsuarioDTO dto) {
+        return service.create(dto);
     }
 
     @PUT
     @Path("/{id}")
-    public void update(@PathParam("id") Long id, UsuarioDTO usuario) {
-        usuarioService.update(id, usuario);
+    public void update(@PathParam("id") Long id, UsuarioDTO dto) {
+        service.update(id, dto);
     }
 
     @DELETE
     @Path("/{id}")
     public void delete(@PathParam("id") Long id) {
-        usuarioService.delete(id);
+        service.delete(id);
     }
 
     @GET
     @Path("/{id}")
     public UsuarioResponseDTO findById(@PathParam("id") Long id) {
-        return usuarioService.findById(id);
+        return service.findById(id);
     }
 
-    @GET
-    @Path("/email/{email}")
-    public UsuarioResponseDTO findByEmail(@PathParam("email") String email) {
-        return usuarioService.findByEmail(email);
-    }
-
-    @GET
-    @Path("/usuario/{nome}")
-    public UsuarioResponseDTO findByNome(@PathParam("nome") String nome) {
-        return usuarioService.findByNome(nome);
-    }
 
     @GET
     public List<UsuarioResponseDTO> findAll() {
-        return usuarioService.findAll();
+        return service.findAll();
     }
 }

@@ -1,4 +1,69 @@
+
+
 package br.manga.model;
+
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+
+@MappedSuperclass
+public class DefaultEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false) // Adicionado para garantir que não seja nulo
+    private LocalDateTime dataCadastro; // Renomeado (era dataMangaCadastro)
+
+    private LocalDateTime dataAlteracao; // Renomeado (era dataMangaAlteracao)
+
+    @PrePersist
+    private void registrarDataCadastro() {
+        dataCadastro = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void registrarDataAlteracao() {
+        dataAlteracao = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
+
+    public LocalDateTime getDataAlteracao() {
+        return dataAlteracao;
+    }
+
+    public void setDataAlteracao(LocalDateTime dataAlteracao) {
+        this.dataAlteracao = dataAlteracao;
+    }
+
+}
+
+
+
+
+/*package br.manga.model;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +94,6 @@ public class DefaultEntity {
         dataMangaAlteracao = LocalDateTime.now();
     }
 
-    /*quando se altera o mangá, altera-se também sua herança, seu defaultEntity. pois mangá é um defaultEntity */
 
     public Long getId() {
         return id;
@@ -57,4 +121,4 @@ public class DefaultEntity {
 
     
 
-}
+}*/

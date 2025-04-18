@@ -13,10 +13,6 @@ public class EntregaRepository implements PanacheRepository<Entrega> {
         return find("codigoRastreio", codigoRastreio).firstResult();
     }
 
-    public List<Entrega> findByStatus(String status) {
-        return find("statusEntrega", status).list();
-    }
-
     public List<Entrega> findByPedido(Long idPedido) {
         return find("pedido.id", idPedido).list();
     }

@@ -6,13 +6,13 @@ import br.manga.dto.MangaDTO;
 import br.manga.dto.MangaResponseDTO;
 
 public interface MangaService {
-    MangaResponseDTO create(MangaDTO manga);
-    void update(Long id, MangaDTO manga);
+    MangaResponseDTO create(MangaDTO dto);
+    void update(Long id, MangaDTO dto);
     void delete(Long id);
     MangaResponseDTO findById(Long id);
-    MangaResponseDTO findByTitulo(String titulo);
-    List<MangaResponseDTO> findByAutor(String autor);
-    List<MangaResponseDTO> findByEditora(String editora);
-    List<MangaResponseDTO> findByGenero(String genero);
+    List<MangaResponseDTO> findByTitulo(String titulo);
+    List<MangaResponseDTO> findByGenero(Long idGenero);
+    List<MangaResponseDTO> findByClassificacao(Long idClassificacao);
+    List<MangaResponseDTO> findByEditora(Long idEditora);
     List<MangaResponseDTO> findAll();
 }

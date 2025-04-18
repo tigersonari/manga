@@ -20,12 +20,16 @@ public class MangaRepository implements PanacheRepository<Manga> {
         return find("SELECT m FROM Manga m WHERE m.autor.nome = ?1", autor).list(); 
     }
 
-    // Busca mangas pelo nome da editora
-    public List<Manga> findMangaByEditora(String editora) {
-        return find("SELECT m FROM Manga m WHERE m.editora.nome = ?1", editora).list(); 
-    }
     public List<Manga> findByGenero(String genero) {
         return find("SELECT m FROM Manga m WHERE m.genero = ?1", genero).list(); 
+    }
+
+    public List<Manga> findByClassificacao(Long idClassificacao) {
+        return find("classificacao.id = ?1", idClassificacao).list();
+    }
+
+    public List<Manga> findByEditora(Long idEditora) {
+        return find("editora.id = ?1", idEditora).list();
     }
 
     public List<Manga> findAllMangas() {

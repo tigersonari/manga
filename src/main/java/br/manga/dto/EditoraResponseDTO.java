@@ -1,23 +1,22 @@
 package br.manga.dto;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import br.manga.model.Editora;
-import br.manga.model.Manga;
 
-public record EditoraResponseDTO (
+public record EditoraResponseDTO(
+    Long id,
     String nome,
     String sede,
-    LocalDate fundacao,
-    List<Manga> manga
-){
+    LocalDate fundacao
+) {
     public static EditoraResponseDTO valueOf(Editora editora) {
-        if (editora == null)
-            return null;
-        return new EditoraResponseDTO(editora.getNome(), editora.getSede(), editora.getFundacao(), editora.getManga());
+        if (editora == null) return null;
+        return new EditoraResponseDTO(
+            editora.getId(),
+            editora.getNome(),
+            editora.getSede(),
+            editora.getFundacao()
+        );
+    }
 }
-}
-    
-
-

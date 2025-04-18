@@ -5,34 +5,28 @@ import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Pagamento extends DefaultEntity {
 
+    @NotBlank(message = "Método de pagamento não pode ser vazio")
     @Column(nullable = false)
     private String metodoPagamento;
 
+    @NotBlank(message = "Status não pode ser vazio")
     @Column(nullable = false)
     private String status;
 
     @Column(nullable = false)
     private LocalDate dataConfirmacao;
 
-    @OneToOne /*? conferir depois*/
-    @Column(nullable = false)
-    @JoinTable(
-        name = "pedido_pagamento",
-        joinColumns = @JoinColumn(name = "id_pagamento"),
-        inverseJoinColumns = @JoinColumn(name = "id_pedido")
-    )
-    private Long idPedido;
-
     @OneToOne
-    @JoinColumn(name = "pedido_id")
+    @JoinColumn(name = "pedido_id", nullable = false, unique = true)
     private Pedido pedido;
 
+    
     public String getMetodoPagamento() {
         return metodoPagamento;
     }
@@ -64,15 +58,4 @@ public class Pagamento extends DefaultEntity {
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
     }
-
-    public Long getIdPedido() {
-        return idPedido;
-    }
-
-    public void setIdPedido(Long idPedido) {
-        this.idPedido = idPedido;
-    }
-
-    
-
 }

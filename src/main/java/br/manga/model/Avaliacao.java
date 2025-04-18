@@ -4,14 +4,18 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
-public class Avaliacao extends DefaultEntity{
+public class Avaliacao extends DefaultEntity {
 
-    
+    @Min(0) @Max(10)
     @Column(nullable = false)
     private double nota;
 
+    @NotBlank
     @Column(nullable = false)
     private String comentario;
 
@@ -19,6 +23,7 @@ public class Avaliacao extends DefaultEntity{
     @JoinColumn(name = "id_manga")
     private Manga manga;
 
+    
     public double getNota() {
         return nota;
     }
@@ -42,9 +47,4 @@ public class Avaliacao extends DefaultEntity{
     public void setManga(Manga manga) {
         this.manga = manga;
     }
-
-    
-
-    
-
 }

@@ -1,6 +1,5 @@
 package br.manga.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -9,9 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class Autor extends DefaultEntity{
+public class Autor extends DefaultEntity {
 
-    
     @Column(nullable = false)
     private String nome;
 
@@ -19,8 +17,9 @@ public class Autor extends DefaultEntity{
     private String nacionalidade;
 
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Manga> manga = new ArrayList<>();
-
+    private List<Manga> mangas; 
+    
+    // Getters e Setters
     public String getNome() {
         return nome;
     }
@@ -37,14 +36,11 @@ public class Autor extends DefaultEntity{
         this.nacionalidade = nacionalidade;
     }
 
-    public List<Manga> getManga() {
-        return manga;
+    public List<Manga> getMangas() {
+        return mangas;
     }
 
-    public void setManga(List<Manga> manga) {
-        this.manga = manga;
+    public void setMangas(List<Manga> mangas) {
+        this.mangas = mangas;
     }
-
-    
-
 }

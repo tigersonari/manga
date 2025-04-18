@@ -1,12 +1,12 @@
 package br.manga.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.manga.dto.AvaliacaoDTO;
 import br.manga.dto.AvaliacaoResponseDTO;
 import br.manga.model.Avaliacao;
 import br.manga.repository.AvaliacaoRepository;
+import br.manga.repository.MangaRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,54 +17,52 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     @Inject
     AvaliacaoRepository avaliacaoRepository;
 
+    @Inject
+    MangaRepository mangaRepository;
+
     @Override
     @Transactional
-    public AvaliacaoResponseDTO create(AvaliacaoDTO avaliacaoDTO) {
+    public AvaliacaoResponseDTO create(AvaliacaoDTO dto) {
         Avaliacao avaliacao = new Avaliacao();
-        
-        avaliacao.setNota(avaliacaoDTO.nota());
-        avaliacao.setComentario(avaliacaoDTO.comentario());
+        avaliacao.setNota(dto.nota());
+        avaliacao.setComentario(dto.comentario());
+        avaliacao.setManga(mangaRepository.findById(dto.mangaId()));
+
         avaliacaoRepository.persist(avaliacao);
         return AvaliacaoResponseDTO.valueOf(avaliacao);
     }
 
     @Override
     @Transactional
-    public void update(Long id, AvaliacaoDTO avaliacaoDTO) {
+    public void update(Long id, AvaliacaoDTO dto) {
         Avaliacao avaliacao = avaliacaoRepository.findById(id);
-            avaliacao.setNota(avaliacaoDTO.nota());
-            avaliacao.setComentario(avaliacaoDTO.comentario());
-            avaliacaoRepository.persist(avaliacao);
-        
+        avaliacao.setNota(dto.nota());
+        avaliacao.setComentario(dto.comentario());
+        avaliacao.setManga(mangaRepository.findById(dto.mangaId()));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        Avaliacao avaliacao = avaliacaoRepository.findById(id);
-        
-            avaliacaoRepository.delete(avaliacao);
-        
+        avaliacaoRepository.deleteById(id);
     }
 
     @Override
     public AvaliacaoResponseDTO findById(Long id) {
-        Avaliacao avaliacao = avaliacaoRepository.findById(id);
-        return AvaliacaoResponseDTO.valueOf(avaliacao);
+        return AvaliacaoResponseDTO.valueOf(avaliacaoRepository.findById(id));
     }
-    
-    /*@Override
-    public List<AvaliacaoResponseDTO> findByMangaId(Long idManga) {
-        List<Avaliacao> avaliacaoList = repository.findByMangaId(idManga);
-        return avaliacaoList.stream()
-                .map(AvaliacaoResponseDTO::new)
-                .collect(Collectors.toList());
-    }*/
+
+    @Override
+    public List<AvaliacaoResponseDTO> findByManga(Long idManga) {
+        return avaliacaoRepository.findByManga(idManga).stream()
+            .map(AvaliacaoResponseDTO::valueOf)
+            .toList();
+    }
 
     @Override
     public List<AvaliacaoResponseDTO> findAll() {
         return avaliacaoRepository.listAll().stream()
-                .map(AvaliacaoResponseDTO::valueOf)
-                .collect(Collectors.toList());
+            .map(AvaliacaoResponseDTO::valueOf)
+            .toList();
     }
 }

@@ -25,3 +25,4 @@ public class PagamentoRepository implements PanacheRepository<Pagamento> {
         return listAll();
     }
 }
+

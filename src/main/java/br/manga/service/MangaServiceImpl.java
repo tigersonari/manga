@@ -5,16 +5,12 @@ import java.util.stream.Collectors;
 
 import br.manga.dto.MangaDTO;
 import br.manga.dto.MangaResponseDTO;
-import br.manga.model.Autor;
-import br.manga.model.Avaliacao;
 import br.manga.model.Classificacao;
 import br.manga.model.Edicao;
-import br.manga.model.Editora;
 import br.manga.model.Estoque;
 import br.manga.model.Genero;
 import br.manga.model.Manga;
 import br.manga.repository.AutorRepository;
-import br.manga.repository.AvaliacaoRepository;
 import br.manga.repository.EdicaoRepository;
 import br.manga.repository.EditoraRepository;
 import br.manga.repository.MangaRepository;
@@ -27,156 +23,102 @@ public class MangaServiceImpl implements MangaService {
 
     @Inject
     MangaRepository mangaRepository;
-    @Inject
-    AutorRepository autorRepository;
-    @Inject
-    AvaliacaoRepository avaliacaoRepository;
-    @Inject
-    EdicaoRepository edicaoRepository;
+
     @Inject
     EditoraRepository editoraRepository;
 
+    @Inject
+    AutorRepository autorRepository;
+
+    @Inject
+    EdicaoRepository edicaoRepository;
+
     @Override
     @Transactional
-    public MangaResponseDTO create(MangaDTO manga) {
-        Manga novoManga = new Manga();
+    public MangaResponseDTO create(MangaDTO dto) {
+        Manga manga = new Manga();
+        manga.setTitulo(dto.titulo());
+        manga.setIsbn(dto.isbn());
+        manga.setLancamento(dto.lancamento());
+        manga.setPreco(dto.preco());
+        manga.setSinopse(dto.sinopse());
+        manga.setEstoque(Estoque.valueOf(dto.idEstoque().toString()));
+        manga.setGenero(Genero.valueOf(dto.idGenero().intValue()));
+        manga.setClassificacao(Classificacao.valueOf(dto.idClassificacao().toString()));
+        manga.setEditora(editoraRepository.findById(dto.idEditora()));
+        manga.setAutor(autorRepository.findById(dto.idAutor()));
 
-
-        novoManga.setTitulo(manga.titulo());
-        novoManga.setIsbn(manga.isbn()); /*tirar dúvida com professor */
-        novoManga.setLancamento(manga.lancamento());
-        novoManga.setSinopse(manga.sinopse());
-
-        novoManga.setEstoque(Estoque.valueOf(manga.idEstoque()));
-        novoManga.setGenero(Genero.valueOf(manga.idGenero()));
-        novoManga.setClassificacao(Classificacao.valueOf(manga.idClassificacao()));
-        
-        Edicao edicao = edicaoRepository.findById(Long.valueOf(manga.idEdicao()));
-        if (edicao == null) {
-            throw new RuntimeException("Edição não encontrada"); /*tiar dúvida com professor sobre erro anterior */
+        if (dto.idsEdicoes() != null) {
+            List<Edicao> edicoes = dto.idsEdicoes().stream()
+                .map(id -> edicaoRepository.findById(id))
+                .collect(Collectors.toList());
+            manga.setEdicoes(edicoes);
         }
-        novoManga.setEdicao(List.of(edicao));
 
-        Avaliacao avaliacao = avaliacaoRepository.findById(Long.valueOf(manga.idAvaliacao()));
-        if (avaliacao == null) {
-            throw new RuntimeException("Avaliacao não encontrada");
-        }
-        novoManga.setAvaliacao(List.of(avaliacao));
-
-        Editora editora = editoraRepository.findById(Long.valueOf(manga.idEditora()));
-        if (editora == null) {
-            throw new RuntimeException("Editora não encontrada");
-        }
-        novoManga.setEditora(editora);
-
-        Autor autor = autorRepository.findById(Long.valueOf(manga.idAutor()));
-        if (autor == null) {
-            throw new RuntimeException("Editora não encontrada");
-        }
-        novoManga.setAutor(autor);
-
-
-       mangaRepository.persist(novoManga);
-        return MangaResponseDTO.valueOf(novoManga);
+        mangaRepository.persist(manga);
+        return MangaResponseDTO.valueOf(manga);
     }
 
     @Override
     @Transactional
-    public void update(Long id, MangaDTO mangaDTO) {
+    public void update(Long id, MangaDTO dto) {
         Manga manga = mangaRepository.findById(id);
+        manga.setTitulo(dto.titulo());
+        manga.setIsbn(dto.isbn());
+        manga.setLancamento(dto.lancamento());
+        manga.setPreco(dto.preco());
+        manga.setSinopse(dto.sinopse());
+        manga.setEstoque(Estoque.valueOf(dto.idEstoque().toString()));
+        manga.setGenero(Genero.valueOf(dto.idGenero().intValue()));
+        manga.setClassificacao(Classificacao.valueOf(dto.idClassificacao().toString()));
+        manga.setEditora(editoraRepository.findById(dto.idEditora()));
+        manga.setAutor(autorRepository.findById(dto.idAutor()));
+    }
 
-    
-    manga.setTitulo(mangaDTO.titulo());
-    manga.setIsbn(mangaDTO.isbn());
-    manga.setLancamento(mangaDTO.lancamento());
-    manga.setSinopse(mangaDTO.sinopse());
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        mangaRepository.deleteById(id);
+    }
 
-    
-    Estoque estoque = Estoque.valueOf(mangaDTO.idEstoque().toString());
-    manga.setEstoque(estoque);
+    @Override
+    public MangaResponseDTO findById(Long id) {
+        return MangaResponseDTO.valueOf(mangaRepository.findById(id));
+    }
 
-    Genero genero = Genero.valueOf(mangaDTO.idGenero().toString());
-    manga.setGenero(genero);
+    @Override
+public List<MangaResponseDTO> findByTitulo(String titulo) {
+        List<Manga> mangas = List.of(mangaRepository.findByTitulo(titulo));
+        return mangas.stream()
+            .map(MangaResponseDTO::valueOf)
+            .collect(Collectors.toList());
+    }
 
-    Classificacao classificacao = Classificacao.valueOf(mangaDTO.idClassificacao().toString());
-    manga.setClassificacao(classificacao);
+    @Override
+    public List<MangaResponseDTO> findByClassificacao(Long idClassificacao) {
+        return mangaRepository.findByClassificacao(idClassificacao).stream()
+            .map(MangaResponseDTO::valueOf)
+            .collect(Collectors.toList());
+    }
 
-    
-    Edicao edicao = edicaoRepository.findById(Long.valueOf(mangaDTO.idEdicao()));
-    
-    manga.setEdicao(List.of(edicao));  
-
-    
-    Avaliacao avaliacao = avaliacaoRepository.findById(Long.valueOf(mangaDTO.idAvaliacao()));
-    
-    manga.setAvaliacao(List.of(avaliacao));  
-
-  
-    Editora editora = editoraRepository.findById(Long.valueOf(mangaDTO.idEditora()));
-    
-    manga.setEditora(editora);
-
-    
-    Autor autor = autorRepository.findById(Long.valueOf(mangaDTO.idAutor()));
-    
-    manga.setAutor(autor);
-
-  
-    mangaRepository.persist(manga);
-}
-
-@Override
-@Transactional
-public void delete(Long id) {
-    Manga manga = mangaRepository.findById(id);
-}
-
-@Override
-public MangaResponseDTO findById(Long id) {
-    Manga manga = mangaRepository.findById(id);
-    
-    return MangaResponseDTO.valueOf(manga);
-}
-
-@Override
-public MangaResponseDTO findByTitulo(String titulo) {
-    Manga manga = mangaRepository.findByTitulo(titulo);
-    
-
-    return MangaResponseDTO.valueOf(manga);
-}
-
-@Override
-public List<MangaResponseDTO> findByAutor(String autor) {
-    List<Manga> mangas = mangaRepository.findMangasByAutor(autor);
-    return mangas.stream()
+    @Override
+    public List<MangaResponseDTO> findByEditora(Long idEditora) {
+        return mangaRepository.findByEditora(idEditora).stream()
             .map(MangaResponseDTO::valueOf)
             .collect(Collectors.toList());
 }
 
-@Override
-public List<MangaResponseDTO> findByEditora(String editora) {
-    List<Manga> mangas = mangaRepository.findMangaByEditora(editora);
-    return mangas.stream()
+    @Override
+    public List<MangaResponseDTO> findByGenero(Long idGenero) {
+        return mangaRepository.findByGenero(idGenero.toString()).stream()
             .map(MangaResponseDTO::valueOf)
             .collect(Collectors.toList());
-}
+    }
 
-@Override
-public List<MangaResponseDTO> findByGenero(String genero) {
-    List<Manga> mangas = mangaRepository.findByGenero(genero);
-    return mangas.stream()
+    @Override
+    public List<MangaResponseDTO> findAll() {
+        return mangaRepository.listAll().stream()
             .map(MangaResponseDTO::valueOf)
-            .collect(Collectors.toList());
-}
-
-@Override
-public List<MangaResponseDTO> findAll() {
-    List<Manga> mangas = mangaRepository.findAllMangas();
-    return mangas.stream()
-            .map(MangaResponseDTO::valueOf)
-            .collect(Collectors.toList());
-}
-
-
+            .toList();
+    }
 }

@@ -1,4 +1,4 @@
-package br.manga.mg1;
+package manga;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

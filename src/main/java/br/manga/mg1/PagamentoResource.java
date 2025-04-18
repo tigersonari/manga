@@ -1,9 +1,6 @@
 package br.manga.mg1;
 
-import java.util.List;
-
 import br.manga.dto.PagamentoDTO;
-import br.manga.dto.PagamentoResponseDTO;
 import br.manga.service.PagamentoService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -15,6 +12,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/pagamentos")
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,45 +20,43 @@ import jakarta.ws.rs.core.MediaType;
 public class PagamentoResource {
 
     @Inject
-    PagamentoService pagamentoService;
+    PagamentoService service;
 
-    @POST
-    public PagamentoResponseDTO create(PagamentoDTO pagamento) {
-        return pagamentoService.create(pagamento);
-    }
-
-    @PUT
-    @Path("/{id}")
-    public void update(@PathParam("id") Long id, PagamentoDTO pagamento) {
-        pagamentoService.update(id, pagamento);
-    }
-
-    @DELETE
-    @Path("/{id}")
-    public void delete(@PathParam("id") Long id) {
-        pagamentoService.delete(id);
+    @GET
+    public Response findAll() {
+        return Response.ok(service.findAll()).build();
     }
 
     @GET
     @Path("/{id}")
-    public PagamentoResponseDTO findById(@PathParam("id") Long id) {
-        return pagamentoService.findById(id);
+    public Response findById(@PathParam("id") Long id) {
+        return Response.ok(service.findById(id)).build();
     }
 
     @GET
     @Path("/pedido/{idPedido}")
-    public List<PagamentoResponseDTO> findByPedido(@PathParam("idPedido") Long idPedido) {
-        return pagamentoService.findByPedido(idPedido);
+    public Response findByPedido(@PathParam("idPedido") Long idPedido) {
+        return Response.ok(service.findByPedido(idPedido)).build();
     }
 
-    @GET
-    @Path("/status/{status}")
-    public List<PagamentoResponseDTO> findByStatus(@PathParam("status") String status) {
-        return pagamentoService.findByStatus(status);
+    @POST
+    public Response create(PagamentoDTO dto) {
+        return Response.status(Response.Status.CREATED)
+            .entity(service.create(dto))
+            .build();
     }
 
-    @GET
-    public List<PagamentoResponseDTO> findAll() {
-        return pagamentoService.findAll();
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, PagamentoDTO dto) {
+        service.update(id, dto);
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") Long id) {
+        service.delete(id);
+        return Response.noContent().build();
     }
 }

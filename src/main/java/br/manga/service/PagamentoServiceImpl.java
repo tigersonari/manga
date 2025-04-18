@@ -1,12 +1,12 @@
 package br.manga.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.manga.dto.PagamentoDTO;
 import br.manga.dto.PagamentoResponseDTO;
 import br.manga.model.Pagamento;
 import br.manga.repository.PagamentoRepository;
+import br.manga.repository.PedidoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,13 +17,17 @@ public class PagamentoServiceImpl implements PagamentoService {
     @Inject
     PagamentoRepository pagamentoRepository;
 
+    @Inject
+    PedidoRepository pedidoRepository;
+
     @Override
     @Transactional
-    public PagamentoResponseDTO create(PagamentoDTO pagamentoDTO) {
+    public PagamentoResponseDTO create(PagamentoDTO dto) {
         Pagamento pagamento = new Pagamento();
-        pagamento.setMetodoPagamento(pagamentoDTO.metodoPagamento());
-        pagamento.setStatus(pagamentoDTO.status());
-        pagamento.setDataConfirmacao(pagamentoDTO.dataConfirmacao());
+        pagamento.setMetodoPagamento(dto.metodoPagamento());
+        pagamento.setStatus(dto.status());
+        pagamento.setDataConfirmacao(dto.dataConfirmacao());
+        pagamento.setPedido(pedidoRepository.findById(dto.idPedido()));
 
         pagamentoRepository.persist(pagamento);
         return PagamentoResponseDTO.valueOf(pagamento);
@@ -31,19 +35,18 @@ public class PagamentoServiceImpl implements PagamentoService {
 
     @Override
     @Transactional
-    public void update(Long id, PagamentoDTO pagamentoDTO) {
+    public void update(Long id, PagamentoDTO dto) {
         Pagamento pagamento = pagamentoRepository.findById(id);
-        pagamento.setStatus(pagamentoDTO.status());
-        pagamento.setDataConfirmacao(pagamentoDTO.dataConfirmacao());
-
-        pagamentoRepository.persist(pagamento);
+        pagamento.setMetodoPagamento(dto.metodoPagamento());
+        pagamento.setStatus(dto.status());
+        pagamento.setDataConfirmacao(dto.dataConfirmacao());
+        pagamento.setPedido(pedidoRepository.findById(dto.idPedido()));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        Pagamento pagamento = pagamentoRepository.findById(id);
-        pagamentoRepository.delete(pagamento);
+        pagamentoRepository.deleteById(id);
     }
 
     @Override
@@ -52,30 +55,16 @@ public class PagamentoServiceImpl implements PagamentoService {
     }
 
     @Override
-    public List<PagamentoResponseDTO> findByMetodo(String metodo) {
-        return pagamentoRepository.findByMetodo(metodo)
-                .stream().map(PagamentoResponseDTO::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<PagamentoResponseDTO> findByStatus(String status) {
-        return pagamentoRepository.findByStatus(status)
-                .stream().map(PagamentoResponseDTO::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<PagamentoResponseDTO> findByPedido(Long idPedido) {
-        return pagamentoRepository.findByPedido(idPedido)
-                .stream().map(PagamentoResponseDTO::valueOf)
-                .collect(Collectors.toList());
+        return pagamentoRepository.findByPedido(idPedido).stream()
+            .map(PagamentoResponseDTO::valueOf)
+            .toList();
     }
 
     @Override
     public List<PagamentoResponseDTO> findAll() {
-        return pagamentoRepository.findAllPagamentos()
-                .stream().map(PagamentoResponseDTO::valueOf)
-                .collect(Collectors.toList());
+        return pagamentoRepository.listAll().stream()
+            .map(PagamentoResponseDTO::valueOf)
+            .toList();
     }
 }

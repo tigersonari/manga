@@ -1,9 +1,6 @@
 package br.manga.mg1;
 
-import java.util.List;
-
 import br.manga.dto.PedidoDTO;
-import br.manga.dto.PedidoResponseDTO;
 import br.manga.service.PedidoService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -15,6 +12,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/pedidos")
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,45 +20,45 @@ import jakarta.ws.rs.core.MediaType;
 public class PedidoResource {
 
     @Inject
-    PedidoService pedidoService;
+    PedidoService service;
 
-    @POST
-    public PedidoResponseDTO create(PedidoDTO pedido) {
-        return pedidoService.create(pedido);
-    }
-
-    @PUT
-    @Path("/{id}")
-    public void update(@PathParam("id") Long id, PedidoDTO pedido) {
-        pedidoService.update(id, pedido);
-    }
-
-    @DELETE
-    @Path("/{id}")
-    public void delete(@PathParam("id") Long id) {
-        pedidoService.delete(id);
+    @GET
+    public Response findAll() {
+        return Response.ok(service.findAll()).build();
     }
 
     @GET
     @Path("/{id}")
-    public PedidoResponseDTO findById(@PathParam("id") Long id) {
-        return pedidoService.findById(id);
+    public Response findById(@PathParam("id") Long id) {
+        return Response.ok(service.findById(id)).build();
     }
 
     @GET
     @Path("/usuario/{idUsuario}")
-    public List<PedidoResponseDTO> findByUsuario(@PathParam("idUsuario") Long idUsuario) {
-        return pedidoService.findByUsuario(idUsuario);
+    public Response findByUsuario(@PathParam("idUsuario") Long idUsuario) {
+        return Response.ok(service.findByUsuario(idUsuario)).build();
     }
 
-    @GET
-    @Path("/status/{status}")
-    public List<PedidoResponseDTO> findByStatus(@PathParam("status") String status) {
-        return pedidoService.findByStatus(status);
+    @POST
+    public Response create(PedidoDTO dto) {
+        return Response.status(Response.Status.CREATED)
+            .entity(service.create(dto))
+            .build();
     }
 
-    @GET
-    public List<PedidoResponseDTO> findAll() {
-        return pedidoService.findAll();
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, PedidoDTO dto) {
+        service.update(id, dto);
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") Long id) {
+        service.delete(id);
+        return Response.noContent().build();
     }
 }
+
+/*add get pedidos por status */

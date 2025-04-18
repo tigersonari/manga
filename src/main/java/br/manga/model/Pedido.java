@@ -9,16 +9,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 public class Pedido extends DefaultEntity {
 
+    @Positive
     @Column(nullable = false)
     private Long numeroPedido;
 
     @Column(nullable = false)
     private LocalDate data;
 
+    @NotBlank
     @Column(nullable = false)
     private String status;
 
@@ -30,12 +36,10 @@ public class Pedido extends DefaultEntity {
     )
     private List<Manga> mangasComprados;
 
-    /*@OneToOne
+    @OneToOne(mappedBy = "pedido")
     private Pagamento pagamento;
 
-    @OneToOne
-    private Entrega entrega;*/ /*verificar necessidade, tirar dúvida com professor */
-
+    @PositiveOrZero
     @Column(nullable = false)
     private Double valorTotal;
 
@@ -43,6 +47,7 @@ public class Pedido extends DefaultEntity {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    // Getters e Setters
     public Long getNumeroPedido() {
         return numeroPedido;
     }
@@ -50,6 +55,8 @@ public class Pedido extends DefaultEntity {
     public void setNumeroPedido(Long numeroPedido) {
         this.numeroPedido = numeroPedido;
     }
+
+    
 
     public LocalDate getData() {
         return data;
@@ -75,6 +82,14 @@ public class Pedido extends DefaultEntity {
         this.mangasComprados = mangasComprados;
     }
 
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
+    }
+
     public Double getValorTotal() {
         return valorTotal;
     }
@@ -90,23 +105,4 @@ public class Pedido extends DefaultEntity {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-
-  /*   public Pagamento getPagamento() {
-        return pagamento;
-    }
-
-    public void setPagamento(Pagamento pagamento) {
-        this.pagamento = pagamento;
-    }
-
-    public Entrega getEntrega() {
-        return entrega;
-    }
-
-    public void setEntrega(Entrega entrega) {
-        this.entrega = entrega;
-    } */
-
-    
-    
 }

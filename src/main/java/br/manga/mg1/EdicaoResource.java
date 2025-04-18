@@ -1,21 +1,18 @@
 package br.manga.mg1;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import br.manga.dto.EdicaoDTO;
-import br.manga.dto.EdicaoResponseDTO;
 import br.manga.service.EdicaoService;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/edicoes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,50 +23,40 @@ public class EdicaoResource {
     EdicaoService service;
 
     @GET
-    public List<EdicaoResponseDTO> buscarTodos() { 
-        return service.findAll();
+    public Response findAll() {
+        return Response.ok(service.findAll()).build();
     }
 
     @GET
-    @Path("/volume/{volume}")
-    public List<EdicaoResponseDTO> buscarPorVolume(Integer volume) { 
-        return service.findByVolume(volume);
+    @Path("/{id}")
+    public Response findById(@PathParam("id") Long id) {
+        return Response.ok(service.findById(id)).build();
     }
 
     @GET
     @Path("/manga/{idManga}")
-    public List<EdicaoResponseDTO> buscarPorMangaId(Long idManga) { 
-        return service.findByMangaId(idManga);
-    }
-
-    @GET
-    @Path("/lancamento/{lancamento}")
-    public List<EdicaoResponseDTO> buscarPorLancamento(String lancamento) { 
-        return service.findByLancamento(LocalDate.parse(lancamento));
-    }
-    /*tirar dúvida sobre lancamento com localdate */
-
-    @GET
-    @Path("/idioma/{idioma}")
-    public List<EdicaoResponseDTO> buscarPorIdioma(String idioma) { 
-        return service.findByIdioma(idioma);
+    public Response findByManga(@PathParam("idManga") Long idManga) {
+        return Response.ok(service.findByManga(idManga)).build();
     }
 
     @POST
-    public EdicaoResponseDTO incluir(EdicaoDTO dto) {
-        return service.create(dto);
+    public Response create(EdicaoDTO dto) {
+        return Response.status(Response.Status.CREATED)
+            .entity(service.create(dto))
+            .build();
     }
 
     @PUT
     @Path("/{id}")
-    public void alterar(Long id, EdicaoDTO dto) {
+    public Response update(@PathParam("id") Long id, EdicaoDTO dto) {
         service.update(id, dto);
+        return Response.noContent().build();
     }
 
     @DELETE
     @Path("/{id}")
-    @Transactional
-    public void apagar(Long id) {
+    public Response delete(@PathParam("id") Long id) {
         service.delete(id);
+        return Response.noContent().build();
     }
 }

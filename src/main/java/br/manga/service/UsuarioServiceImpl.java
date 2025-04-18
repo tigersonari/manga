@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import br.manga.dto.UsuarioDTO;
 import br.manga.dto.UsuarioResponseDTO;
+import br.manga.model.TipoUsuario;
 import br.manga.model.Usuario;
 import br.manga.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,34 +20,33 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioResponseDTO create(UsuarioDTO usuarioDTO) {
+    public UsuarioResponseDTO create(UsuarioDTO dto) {
         Usuario usuario = new Usuario();
-        usuario.setNome(usuarioDTO.nome());
-        usuario.setEmail(usuarioDTO.email());
-        usuario.setSenha(usuarioDTO.senha());
-        usuario.setEndereco(usuarioDTO.endereco());
-        
+        usuario.setNome(dto.nome());
+        usuario.setEmail(dto.email());
+        usuario.setSenhaHash(dto.senha()); // Em produção, use BCrypt!
+        usuario.setEndereco(dto.endereco());
+        usuario.setTipoUsuario(TipoUsuario.valueOf(dto.idTipoUsuario().toString()));
+
         usuarioRepository.persist(usuario);
         return UsuarioResponseDTO.valueOf(usuario);
     }
 
     @Override
     @Transactional
-    public void update(Long id, UsuarioDTO usuarioDTO) {
+    public void update(Long id, UsuarioDTO dto) {
         Usuario usuario = usuarioRepository.findById(id);
-        usuario.setNome(usuarioDTO.nome());
-        usuario.setEmail(usuarioDTO.email());
-        usuario.setSenha(usuarioDTO.senha());
-        usuario.setEndereco(usuarioDTO.endereco());
-
-        usuarioRepository.persist(usuario);
+        usuario.setNome(dto.nome());
+        usuario.setEmail(dto.email());
+        usuario.setSenhaHash(dto.senha());
+        usuario.setEndereco(dto.endereco());
+        usuario.setTipoUsuario(TipoUsuario.valueOf(dto.idTipoUsuario().toString()));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        Usuario usuario = usuarioRepository.findById(id);
-        usuarioRepository.delete(usuario);
+        usuarioRepository.deleteById(id);
     }
 
     @Override
@@ -54,21 +54,18 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioResponseDTO.valueOf(usuarioRepository.findById(id));
     }
 
-    @Override
-    public UsuarioResponseDTO findByEmail(String email) {
-        return UsuarioResponseDTO.valueOf(usuarioRepository.findByEmail(email));
+   @Override
+    public List<UsuarioResponseDTO> findByNome(String nome) {
+        List<Usuario> usuarios = List.of(usuarioRepository.findByNome(nome));
+        return usuarios.stream()
+            .map(usuario -> UsuarioResponseDTO.valueOf(usuario))
+            .collect(Collectors.toList());
     }
-
-    @Override
-    public UsuarioResponseDTO findByNome(String nome) {
-        return UsuarioResponseDTO.valueOf(usuarioRepository.findByNome(nome));
-    }
-
 
     @Override
     public List<UsuarioResponseDTO> findAll() {
-        return usuarioRepository.findAllUsuarios()
-                .stream().map(UsuarioResponseDTO::valueOf)
-                .collect(Collectors.toList());
+        return usuarioRepository.listAll().stream()
+            .map(UsuarioResponseDTO::valueOf)
+            .toList();
     }
 }

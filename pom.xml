@@ -35,6 +35,10 @@
             <artifactId>quarkus-rest</artifactId>
         </dependency>
         <dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-elytron-security-common</artifactId>
+</dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-narayana-jta</artifactId>
         </dependency>

@@ -1,21 +1,22 @@
 package br.manga.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
-public class Editora extends DefaultEntity{
+public class Editora extends DefaultEntity {
 
-    
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String nome;
 
+    @NotBlank
     @Column(nullable = false)
     private String sede;
 
@@ -23,7 +24,7 @@ public class Editora extends DefaultEntity{
     private LocalDate fundacao;
 
     @OneToMany(mappedBy = "editora", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Manga> manga = new ArrayList<>();
+    private List<Manga> mangas;
 
     public String getNome() {
         return nome;
@@ -49,12 +50,13 @@ public class Editora extends DefaultEntity{
         this.fundacao = fundacao;
     }
 
-    public List<Manga> getManga() {
-        return manga;
+    public List<Manga> getMangas() {
+        return mangas;
     }
 
-    public void setManga(List<Manga> manga) {
-        this.manga = manga;
-    }
+    public void setMangas(List<Manga> mangas) {
+        this.mangas = mangas;
+    } 
 
+    
 }

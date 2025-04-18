@@ -9,15 +9,15 @@ public class StatusConverter implements AttributeConverter<Status, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(Status status) {
-
-
-            return status == null ? null : status.getId();
-
+        return status == null ? null : status.getId();
     }
 
     @Override
     public Status convertToEntityAttribute(Integer id) {
-        return Status.valueOf(id);
+        if (id == null) return null;
+        for (Status s : Status.values()) {
+            if (s.getId() == id) return s;
+        }
+        throw new IllegalArgumentException("ID de Status inválido: " + id);
     }
-    
 }

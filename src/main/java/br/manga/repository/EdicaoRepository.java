@@ -9,13 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class EdicaoRepository implements PanacheRepository<Edicao> {
 
-   
-    public List<Edicao> findEdicoesByManga(Long idManga) {
-        return find("SELECT e FROM Edicao e WHERE e.manga.id = ?1", idManga).list();
-    }
-
-    
-    public Edicao findByMangaAndVolume(Long idManga, Integer volume) {
-        return find("SELECT e FROM Edicao e WHERE e.manga.id = ?1 AND e.volume = ?2", idManga, volume).firstResult();
+    public List<Edicao> findByManga(Long idManga) {
+        return find("manga.id = ?1", idManga).list();
     }
 }

@@ -1,7 +1,6 @@
 package br.manga.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.manga.dto.AutorDTO;
 import br.manga.dto.AutorResponseDTO;
@@ -19,53 +18,52 @@ public class AutorServiceImpl implements AutorService {
 
     @Override
     @Transactional
-    public AutorResponseDTO create(AutorDTO autorDTO) {
+    public AutorResponseDTO create(AutorDTO dto) {
         Autor autor = new Autor();
-        autor.setNome(autorDTO.nome());
-        autor.setNacionalidade(autorDTO.nacionalidade());
+        autor.setNome(dto.nome());
+        autor.setNacionalidade(dto.nacionalidade());
+
         autorRepository.persist(autor);
         return AutorResponseDTO.valueOf(autor);
     }
 
     @Override
     @Transactional
-    public void update(Long id, AutorDTO autorDTO) {
+    public void update(Long id, AutorDTO dto) {
         Autor autor = autorRepository.findById(id);
-        autor.setNome(autorDTO.nome());
-        autor.setNacionalidade(autorDTO.nacionalidade());
-        autorRepository.persist(autor);
+        autor.setNome(dto.nome());
+        autor.setNacionalidade(dto.nacionalidade());
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        Autor autor = autorRepository.findById(id);
-        autorRepository.delete(autor);
+        autorRepository.deleteById(id);
     }
 
     @Override
     public AutorResponseDTO findById(Long id) {
-        Autor autor = autorRepository.findById(id);
-        return AutorResponseDTO.valueOf(autor);
+        return AutorResponseDTO.valueOf(autorRepository.findById(id));
     }
 
     @Override
-    public AutorResponseDTO findByNome(String nome) {
-        Autor autor = autorRepository.findByNome(nome);
-        return AutorResponseDTO.valueOf(autor);
+    public List<AutorResponseDTO> findByNome(String nome) {
+        return autorRepository.findByNome(nome).stream()
+            .map(AutorResponseDTO::valueOf)
+            .toList();
     }
 
     @Override
     public List<AutorResponseDTO> findByNacionalidade(String nacionalidade) {
         return autorRepository.findByNacionalidade(nacionalidade).stream()
-                .map(AutorResponseDTO::valueOf)
-                .collect(Collectors.toList());
+            .map(AutorResponseDTO::valueOf)
+            .toList();
     }
 
     @Override
     public List<AutorResponseDTO> findAll() {
         return autorRepository.listAll().stream()
-                .map(AutorResponseDTO::valueOf)
-                .collect(Collectors.toList());
+            .map(AutorResponseDTO::valueOf)
+            .toList();
     }
 }

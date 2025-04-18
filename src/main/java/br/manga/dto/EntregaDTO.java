@@ -1,10 +1,10 @@
 package br.manga.dto;
 
- public record EntregaDTO(
-    Long id,
-    String endereco,
-    String codigoRastreio,
+import jakarta.validation.constraints.NotBlank;
+
+public record EntregaDTO(
+    @NotBlank String endereco,
+    @NotBlank String codigoRastreio,
     String status,
-    Integer idPedido
-) {
-}
+    Long pedidoId
+) {}

@@ -6,12 +6,10 @@ import br.manga.dto.PedidoDTO;
 import br.manga.dto.PedidoResponseDTO;
 
 public interface PedidoService {
-    PedidoResponseDTO create(PedidoDTO pedido);
-    void update(Long id, PedidoDTO pedido);
+    PedidoResponseDTO create(PedidoDTO dto);
+    void update(Long id, PedidoDTO dto);
     void delete(Long id);
     PedidoResponseDTO findById(Long id);
-    PedidoResponseDTO findByNumeroPedido(Long numeroPedido);
-    List<PedidoResponseDTO> findByStatus(String status);
     List<PedidoResponseDTO> findByUsuario(Long idUsuario);
     List<PedidoResponseDTO> findAll();
 }

@@ -10,7 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class AutorRepository implements PanacheRepository<Autor> {
     
     
-    public Autor findByNome(String nome) {
+    public List< Autor >findByNome(String nome) {
         return find("nome", nome).firstResult();
     }
 

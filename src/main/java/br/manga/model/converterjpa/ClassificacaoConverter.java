@@ -9,15 +9,15 @@ public class ClassificacaoConverter implements AttributeConverter<Classificacao,
 
     @Override
     public Integer convertToDatabaseColumn(Classificacao classificacao) {
-
-
-            return classificacao == null ? null : classificacao.getId();
-
+        return classificacao == null ? null : classificacao.getId();
     }
 
     @Override
     public Classificacao convertToEntityAttribute(Integer id) {
-        return Classificacao.valueOf(id);
+        if (id == null) return null;
+        for (Classificacao c : Classificacao.values()) {
+            if (c.getId() == id) return c;
+        }
+        throw new IllegalArgumentException("ID de Classificacao inválido: " + id);
     }
-    
 }

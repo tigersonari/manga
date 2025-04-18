@@ -10,12 +10,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "edicao", uniqueConstraints = @UniqueConstraint(columnNames = {"titulo", "volume"}))
 public class Edicao extends DefaultEntity{
 
     
+    @Positive
     @Column(nullable = false)
     private Integer volume;
 
@@ -28,6 +30,11 @@ public class Edicao extends DefaultEntity{
     @Column(nullable = false)
     private String dimensao;
 
+
+    /*ultima alteração */
+    @Column(nullable = false)
+    private String titulo;
+    /* */
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -109,6 +116,14 @@ public class Edicao extends DefaultEntity{
 
     public void setManga(Manga manga) {
         this.manga = manga;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     
