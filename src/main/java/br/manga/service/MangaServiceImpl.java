@@ -1,5 +1,6 @@
 package br.manga.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,9 +49,20 @@ public class MangaServiceImpl implements MangaService {
         manga.setEditora(editoraRepository.findById(dto.idEditora()));
         manga.setAutor(autorRepository.findById(dto.idAutor()));
 
-        if (dto.idsEdicoes() != null) {
+        // Inicializar a lista de edições como vazia
+        manga.setEdicoes(new ArrayList<>());
+
+        // Associar edições, se fornecidas
+        if (dto.idsEdicoes() != null && !dto.idsEdicoes().isEmpty()) {
             List<Edicao> edicoes = dto.idsEdicoes().stream()
-                .map(id -> edicaoRepository.findById(id))
+                .map(edicaoId -> { // Renomeado 'id' para 'edicaoId' para evitar conflito
+                    Edicao edicao = edicaoRepository.findById(edicaoId);
+                    if (edicao == null) {
+                        throw new IllegalArgumentException("Edição com ID " + edicaoId + " não encontrada.");
+                    }
+                    edicao.setManga(manga); // Atualizar a referência do mangá na edição
+                    return edicao;
+                })
                 .collect(Collectors.toList());
             manga.setEdicoes(edicoes);
         }
@@ -73,6 +85,25 @@ public class MangaServiceImpl implements MangaService {
         manga.setClassificacao(Classificacao.valueOf(dto.idClassificacao().toString()));
         manga.setEditora(editoraRepository.findById(dto.idEditora()));
         manga.setAutor(autorRepository.findById(dto.idAutor()));
+
+        // Atualizar edições, se fornecidas
+        if (dto.idsEdicoes() != null && !dto.idsEdicoes().isEmpty()) {
+            List<Edicao> edicoes = dto.idsEdicoes().stream()
+                .map(edicaoId -> { // Renomeado 'id' para 'edicaoId' para evitar conflito
+                    Edicao edicao = edicaoRepository.findById(edicaoId);
+                    if (edicao == null) {
+                        throw new IllegalArgumentException("Edição com ID " + edicaoId + " não encontrada.");
+                    }
+                    edicao.setManga(manga); // Atualizar a referência do mangá na edição
+                    return edicao;
+                })
+                .collect(Collectors.toList());
+            manga.setEdicoes(edicoes);
+        } else {
+            // Se idsEdicoes for null ou vazio, limpar as edições associadas
+            manga.getEdicoes().forEach(edicao -> edicao.setManga(null));
+            manga.setEdicoes(new ArrayList<>());
+        }
     }
 
     @Override
@@ -87,7 +118,7 @@ public class MangaServiceImpl implements MangaService {
     }
 
     @Override
-public List<MangaResponseDTO> findByTitulo(String titulo) {
+    public List<MangaResponseDTO> findByTitulo(String titulo) {
         List<Manga> mangas = List.of(mangaRepository.findByTitulo(titulo));
         return mangas.stream()
             .map(MangaResponseDTO::valueOf)
@@ -106,7 +137,7 @@ public List<MangaResponseDTO> findByTitulo(String titulo) {
         return mangaRepository.findByEditora(idEditora).stream()
             .map(MangaResponseDTO::valueOf)
             .collect(Collectors.toList());
-}
+    }
 
     @Override
     public List<MangaResponseDTO> findByGenero(Long idGenero) {

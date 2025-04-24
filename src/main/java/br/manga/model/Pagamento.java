@@ -26,7 +26,8 @@ public class Pagamento extends DefaultEntity {
     @JoinColumn(name = "pedido_id", nullable = false, unique = true)
     private Pedido pedido;
 
-    
+
+
     public String getMetodoPagamento() {
         return metodoPagamento;
     }

@@ -1,6 +1,7 @@
 package br.manga.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -22,6 +23,8 @@ public class Editora extends DefaultEntity {
 
     @Column(nullable = false)
     private LocalDate fundacao;
+
+
 
     @OneToMany(mappedBy = "editora", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Manga> mangas;

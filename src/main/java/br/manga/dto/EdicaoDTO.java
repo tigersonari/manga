@@ -15,5 +15,5 @@ public record EdicaoDTO(
     @NotNull Integer formatoId,
     @NotNull Integer tipoCapaId,
     @NotNull Integer statusId,
-    @NotNull Long mangaId
+    Long mangaId
 ) {}

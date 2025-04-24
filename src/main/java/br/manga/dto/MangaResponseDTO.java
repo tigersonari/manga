@@ -6,7 +6,6 @@ import java.util.List;
 import br.manga.model.Manga;
 
 public record MangaResponseDTO(
-    Long id,
     String titulo,
     String isbn,
     LocalDate lancamento,
@@ -22,7 +21,6 @@ public record MangaResponseDTO(
     public static MangaResponseDTO valueOf(Manga manga) {
         if (manga == null) return null;
         return new MangaResponseDTO(
-            manga.getId(),
             manga.getTitulo(),
             manga.getIsbn(),
             manga.getLancamento(),

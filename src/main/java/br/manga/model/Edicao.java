@@ -52,7 +52,7 @@ public class Edicao extends DefaultEntity{
     @JoinColumn(name = "id_manga")
     private Manga manga;
 
-    
+
 
     public Integer getVolume() {
         return volume;

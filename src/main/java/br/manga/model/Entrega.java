@@ -1,5 +1,6 @@
 package br.manga.model;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -25,7 +26,8 @@ public class Entrega extends DefaultEntity {
     @JoinColumn(name = "pedido_id", nullable = true)
     private Pedido pedido;
 
-    
+
+
     public String getEndereco() {
         return endereco;
     }

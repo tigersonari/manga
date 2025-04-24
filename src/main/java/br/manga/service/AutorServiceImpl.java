@@ -1,3 +1,4 @@
+
 package br.manga.service;
 
 import java.util.List;
@@ -13,6 +14,58 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class AutorServiceImpl implements AutorService {
 
+    @Override
+    public List<AutorResponseDTO> findAll() {
+        // Implementation for finding all authors
+        return autorRepository.findAll().stream()
+                .map(AutorResponseDTO::valueOf)
+                .toList();
+    }
+
+    @Override
+    public AutorResponseDTO findById(Long id) {
+        // Implementation for finding an author by ID
+        Autor autor = autorRepository.findByIdOptional(id)
+                .orElseThrow(() -> new RuntimeException("Author not found"));
+        return AutorResponseDTO.valueOf(autor);
+    }
+
+    @Override
+    public List<AutorResponseDTO> findByNome(String nome) {
+        // Implementation for finding authors by name
+        return autorRepository.findByNome(nome).stream()
+                .map(AutorResponseDTO::valueOf)
+                .toList();
+    }
+
+    @Override
+    public List<AutorResponseDTO> findByNacionalidade(String nacionalidade) {
+        // Implementation for finding authors by nationality
+        return autorRepository.findByNacionalidade(nacionalidade).stream()
+                .map(AutorResponseDTO::valueOf)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        // Implementation for deleting an author by ID
+        Autor autor = autorRepository.findByIdOptional(id)
+                .orElseThrow(() -> new RuntimeException("Author not found"));
+        autorRepository.delete(autor);
+    }
+
+    @Override
+    @Transactional
+    public void update(Long id, AutorDTO dto) {
+        // Implementation for updating an author
+        Autor autor = autorRepository.findByIdOptional(id)
+                .orElseThrow(() -> new RuntimeException("Author not found"));
+        autor.setNome(dto.nome());
+        autor.setNacionalidade(dto.nacionalidade());
+        autorRepository.persist(autor);
+    }
+
     @Inject
     AutorRepository autorRepository;
 
@@ -25,45 +78,5 @@ public class AutorServiceImpl implements AutorService {
 
         autorRepository.persist(autor);
         return AutorResponseDTO.valueOf(autor);
-    }
-
-    @Override
-    @Transactional
-    public void update(Long id, AutorDTO dto) {
-        Autor autor = autorRepository.findById(id);
-        autor.setNome(dto.nome());
-        autor.setNacionalidade(dto.nacionalidade());
-    }
-
-    @Override
-    @Transactional
-    public void delete(Long id) {
-        autorRepository.deleteById(id);
-    }
-
-    @Override
-    public AutorResponseDTO findById(Long id) {
-        return AutorResponseDTO.valueOf(autorRepository.findById(id));
-    }
-
-    @Override
-    public List<AutorResponseDTO> findByNome(String nome) {
-        return autorRepository.findByNome(nome).stream()
-            .map(AutorResponseDTO::valueOf)
-            .toList();
-    }
-
-    @Override
-    public List<AutorResponseDTO> findByNacionalidade(String nacionalidade) {
-        return autorRepository.findByNacionalidade(nacionalidade).stream()
-            .map(AutorResponseDTO::valueOf)
-            .toList();
-    }
-
-    @Override
-    public List<AutorResponseDTO> findAll() {
-        return autorRepository.listAll().stream()
-            .map(AutorResponseDTO::valueOf)
-            .toList();
     }
 }

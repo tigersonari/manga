@@ -44,6 +44,8 @@ public class Manga extends DefaultEntity {
     @Enumerated(EnumType.STRING)
     private Classificacao classificacao;
 
+
+
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Edicao> edicoes;
 

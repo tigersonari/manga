@@ -6,9 +6,8 @@ import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -28,13 +27,8 @@ public class Pedido extends DefaultEntity {
     @Column(nullable = false)
     private String status;
 
-    @ManyToMany
-    @JoinTable(
-        name = "pedido_manga",
-        joinColumns = @JoinColumn(name = "id_pedido"),
-        inverseJoinColumns = @JoinColumn(name = "id_manga")
-    )
-    private List<Manga> mangasComprados;
+    @OneToMany(mappedBy = "pedido")
+private List<PedidoManga> mangasComprados; /*ATUALIZADO COM A NOVA ENTIDADE DE PEDIDO-MANGA */
 
     @OneToOne(mappedBy = "pedido")
     private Pagamento pagamento;
@@ -46,6 +40,7 @@ public class Pedido extends DefaultEntity {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
 
     // Getters e Setters
     public Long getNumeroPedido() {
@@ -74,11 +69,11 @@ public class Pedido extends DefaultEntity {
         this.status = status;
     }
 
-    public List<Manga> getMangasComprados() {
+    public List<PedidoManga> getMangasComprados() {
         return mangasComprados;
     }
-
-    public void setMangasComprados(List<Manga> mangasComprados) {
+    
+    public void setMangasComprados(List<PedidoManga> mangasComprados) {
         this.mangasComprados = mangasComprados;
     }
 
@@ -105,4 +100,5 @@ public class Pedido extends DefaultEntity {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+    
 }

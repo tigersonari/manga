@@ -1,5 +1,7 @@
 package br.manga.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -24,6 +26,7 @@ public class Avaliacao extends DefaultEntity {
     private Manga manga;
 
     
+
     public double getNota() {
         return nota;
     }

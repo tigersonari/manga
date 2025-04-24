@@ -92,4 +92,5 @@ public class Usuario extends DefaultEntity {
     public void setPedidos(List<Pedido> pedidos) {
         this.pedidos = pedidos;
     }
+
 }

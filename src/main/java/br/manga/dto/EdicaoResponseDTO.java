@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import br.manga.model.Edicao;
 
 public record EdicaoResponseDTO(
-    Long id,
     Integer volume,
     String idioma,
     LocalDate lancamento,
@@ -19,7 +18,6 @@ public record EdicaoResponseDTO(
     public static EdicaoResponseDTO valueOf(Edicao edicao) {
         if (edicao == null) return null;
         return new EdicaoResponseDTO(
-            edicao.getId(),
             edicao.getVolume(),
             edicao.getIdioma(),
             edicao.getLancamento(),
