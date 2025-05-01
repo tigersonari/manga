@@ -6,8 +6,6 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -35,19 +33,13 @@ public class Manga extends DefaultEntity {
     @Column(nullable = false)
     private String sinopse;
 
-    @Enumerated(EnumType.STRING)
     private Estoque estoque;
 
-    @Enumerated(EnumType.STRING)
     private Genero genero;
 
-    @Enumerated(EnumType.STRING)
     private Classificacao classificacao;
 
 
-
-    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Edicao> edicoes;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Avaliacao> avaliacoes;
@@ -60,7 +52,7 @@ public class Manga extends DefaultEntity {
     @JoinColumn(name = "id_autor")
     private Autor autor;
 
-    // Getters e Setters
+    
     public String getTitulo() {
         return titulo;
     }
@@ -119,13 +111,6 @@ public class Manga extends DefaultEntity {
         this.classificacao = classificacao;
     }
 
-    public List<Edicao> getEdicoes() {
-        return edicoes;
-    }
-
-    public void setEdicoes(List<Edicao> edicoes) {
-        this.edicoes = edicoes;
-    }
 
     public List<Avaliacao> getAvaliacoes() {
         return avaliacoes;

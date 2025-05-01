@@ -27,7 +27,7 @@ public class PagamentoServiceImpl implements PagamentoService {
         pagamento.setMetodoPagamento(dto.metodoPagamento());
         pagamento.setStatus(dto.status());
         pagamento.setDataConfirmacao(dto.dataConfirmacao());
-        pagamento.setPedido(pedidoRepository.findById(dto.idPedido()));
+        pagamento.setPedido(pedidoRepository.findById(dto.idPedido().longValue()));
 
         pagamentoRepository.persist(pagamento);
         return PagamentoResponseDTO.valueOf(pagamento);
@@ -40,7 +40,7 @@ public class PagamentoServiceImpl implements PagamentoService {
         pagamento.setMetodoPagamento(dto.metodoPagamento());
         pagamento.setStatus(dto.status());
         pagamento.setDataConfirmacao(dto.dataConfirmacao());
-        pagamento.setPedido(pedidoRepository.findById(dto.idPedido()));
+        pagamento.setPedido(pedidoRepository.findById(dto.idPedido().longValue()));
     }
 
     @Override

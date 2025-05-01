@@ -13,3 +13,4 @@ public interface UsuarioService {
     List<UsuarioResponseDTO> findByNome(String nome);
     List<UsuarioResponseDTO> findAll();
 }
+

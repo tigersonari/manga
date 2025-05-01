@@ -8,5 +8,5 @@ public record PedidoDTO(
     Double valorTotal,
     Long idUsuario,
     List<Long> idsMangas,
-    Long idPagamento
+    Integer idPagamento
 ) {}

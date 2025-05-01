@@ -1,7 +1,7 @@
 package br.manga.mg1;
 
-import br.manga.dto.UsuarioDTO;
-import br.manga.service.UsuarioService;
+import br.manga.dto.AdminDTO;
+import br.manga.service.AdminService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -14,13 +14,13 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("/usuarios")
+@Path("/admins")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UsuarioResource {
+public class AdminResource {
 
     @Inject
-    UsuarioService service;
+    AdminService service;
 
     @GET
     public Response findAll() {
@@ -40,7 +40,7 @@ public class UsuarioResource {
     }
 
     @POST
-    public Response create(UsuarioDTO dto) {
+    public Response create(AdminDTO dto) {
         return Response.status(Response.Status.CREATED)
             .entity(service.create(dto))
             .build();
@@ -48,7 +48,7 @@ public class UsuarioResource {
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, UsuarioDTO dto) {
+    public Response update(@PathParam("id") Long id, AdminDTO dto) {
         service.update(id, dto);
         return Response.noContent().build();
     }

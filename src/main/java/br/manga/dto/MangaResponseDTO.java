@@ -1,8 +1,12 @@
 package br.manga.dto;
 
 import java.time.LocalDate;
-import java.util.List;
 
+import br.manga.model.Autor;
+import br.manga.model.Classificacao;
+import br.manga.model.Editora;
+import br.manga.model.Estoque;
+import br.manga.model.Genero;
 import br.manga.model.Manga;
 
 public record MangaResponseDTO(
@@ -11,12 +15,11 @@ public record MangaResponseDTO(
     LocalDate lancamento,
     Double preco,
     String sinopse,
-    String estoque,
-    String genero,
-    String classificacao,
-    String editora,
-    String autor,
-    List<String> edicoes
+    Estoque estoque,
+    Genero genero,
+    Classificacao classificacao,
+    Editora editora,
+    Autor autor
 ) {
     public static MangaResponseDTO valueOf(Manga manga) {
         if (manga == null) return null;
@@ -26,12 +29,11 @@ public record MangaResponseDTO(
             manga.getLancamento(),
             manga.getPreco(),
             manga.getSinopse(),
-            manga.getEstoque() != null ? manga.getEstoque().name() : null,
-            manga.getGenero() != null ? manga.getGenero().name() : null,
-            manga.getClassificacao() != null ? manga.getClassificacao().name() : null,
-            manga.getEditora() != null ? manga.getEditora().getNome() : null,
-            manga.getAutor() != null ? manga.getAutor().getNome() : null,
-            manga.getEdicoes() != null ? manga.getEdicoes().stream().map(e -> e.getTitulo()).toList() : null
+            manga.getEstoque(),
+            manga.getGenero(),
+            manga.getClassificacao(),
+            manga.getEditora(),
+            manga.getAutor()
         );
     }
 }

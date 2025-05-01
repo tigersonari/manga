@@ -27,7 +27,7 @@ public class EntregaServiceImpl implements EntregaService {
         entrega.setEndereco(dto.endereco());
         entrega.setCodigoRastreio(dto.codigoRastreio());
         entrega.setStatus(dto.status());
-        entrega.setPedido(pedidoRepository.findById(dto.pedidoId()));
+        entrega.setPedido(pedidoRepository.findById(dto.idPedido().longValue()));
 
         entregaRepository.persist(entrega);
         return EntregaResponseDTO.valueOf(entrega);
@@ -40,7 +40,7 @@ public class EntregaServiceImpl implements EntregaService {
         entrega.setEndereco(dto.endereco());
         entrega.setCodigoRastreio(dto.codigoRastreio());
         entrega.setStatus(dto.status());
-        entrega.setPedido(pedidoRepository.findById(dto.pedidoId()));
+        entrega.setPedido(pedidoRepository.findById(dto.idPedido().longValue()));
     }
 
     @Override
@@ -61,8 +61,8 @@ public class EntregaServiceImpl implements EntregaService {
     }
 
     @Override
-    public List<EntregaResponseDTO> findByPedido(Long pedidoId) {
-        return entregaRepository.findByPedido(pedidoId).stream()
+    public List<EntregaResponseDTO> findByPedido(Long idPedido) {
+        return entregaRepository.findByPedido(idPedido).stream()
             .map(EntregaResponseDTO::valueOf)
             .toList();
     }

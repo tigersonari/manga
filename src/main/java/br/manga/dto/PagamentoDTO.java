@@ -9,5 +9,5 @@ public record PagamentoDTO(
     @NotBlank String metodoPagamento,
     @NotNull String status,
     @NotNull LocalDate dataConfirmacao,
-    Long idPedido
+    Integer idPedido
 ) {}

@@ -42,7 +42,7 @@ private List<PedidoManga> mangasComprados; /*ATUALIZADO COM A NOVA ENTIDADE DE P
     private Usuario usuario;
 
 
-    // Getters e Setters
+  
     public Long getNumeroPedido() {
         return numeroPedido;
     }

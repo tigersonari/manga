@@ -4,8 +4,6 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -36,15 +34,13 @@ public class Edicao extends DefaultEntity{
     private String titulo;
     /* */
 
-    @Enumerated(EnumType.STRING)
+ 
     @Column(nullable = false)
     private Formato formato;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoCapa tipoCapa;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
 

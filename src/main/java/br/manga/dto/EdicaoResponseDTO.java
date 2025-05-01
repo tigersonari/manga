@@ -3,6 +3,10 @@ package br.manga.dto;
 import java.time.LocalDate;
 
 import br.manga.model.Edicao;
+import br.manga.model.Formato;
+import br.manga.model.Manga;
+import br.manga.model.Status;
+import br.manga.model.TipoCapa;
 
 public record EdicaoResponseDTO(
     Integer volume,
@@ -10,10 +14,10 @@ public record EdicaoResponseDTO(
     LocalDate lancamento,
     String dimensao,
     String titulo,
-    String formato,
-    String tipoCapa,
-    String status,
-    String manga
+    Formato formato,
+    TipoCapa tipoCapa,
+    Status status,
+    Manga manga
 ) {
     public static EdicaoResponseDTO valueOf(Edicao edicao) {
         if (edicao == null) return null;
@@ -23,10 +27,10 @@ public record EdicaoResponseDTO(
             edicao.getLancamento(),
             edicao.getDimensao(),
             edicao.getTitulo(),
-            edicao.getFormato() != null ? edicao.getFormato().name() : null,
-            edicao.getTipoCapa() != null ? edicao.getTipoCapa().name() : null,
-            edicao.getStatus() != null ? edicao.getStatus().name() : null,
-            edicao.getManga() != null ? edicao.getManga().getTitulo() : null
+            edicao.getFormato(),
+            edicao.getTipoCapa(),
+            edicao.getStatus(),
+            edicao.getManga()
         );
     }
 }

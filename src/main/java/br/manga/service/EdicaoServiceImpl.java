@@ -36,9 +36,9 @@ public class EdicaoServiceImpl implements EdicaoService {
         edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
         edicao.setStatus(Status.valueOf(dto.statusId().toString()));
 
-        // Associar o mangá apenas se mangaId for fornecido
+        
         if (dto.mangaId() != null) {
-            edicao.setManga(mangaRepository.findById(dto.mangaId()));
+            edicao.setManga(mangaRepository.findById(dto.mangaId().longValue()));
         }
 
         edicaoRepository.persist(edicao);
@@ -58,11 +58,10 @@ public class EdicaoServiceImpl implements EdicaoService {
         edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
         edicao.setStatus(Status.valueOf(dto.statusId().toString()));
 
-        // Atualizar a associação com mangá apenas se mangaId for fornecido
         if (dto.mangaId() != null) {
-            edicao.setManga(mangaRepository.findById(dto.mangaId()));
+            edicao.setManga(mangaRepository.findById(dto.mangaId().longValue()));
         } else {
-            edicao.setManga(null); // Permite remover a associação com mangá
+            edicao.setManga(null); 
         }
     }
 

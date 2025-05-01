@@ -1,12 +1,13 @@
 package br.manga.dto;
 
 import br.manga.model.Entrega;
+import br.manga.model.Pedido;
 
 public record EntregaResponseDTO(
     String endereco,
     String codigoRastreio,
     String status,
-    Long pedidoId
+    Pedido pedido
 ) {
     public static EntregaResponseDTO valueOf(Entrega entrega) {
         if (entrega == null) return null;
@@ -14,7 +15,7 @@ public record EntregaResponseDTO(
             entrega.getEndereco(),
             entrega.getCodigoRastreio(),
             entrega.getStatus(),
-            entrega.getPedido() != null ? entrega.getPedido().getId() : null
+            entrega.getPedido()
         );
     }
 }

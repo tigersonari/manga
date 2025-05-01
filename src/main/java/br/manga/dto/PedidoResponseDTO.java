@@ -3,6 +3,7 @@ package br.manga.dto;
 
 import java.util.List;
 
+import br.manga.model.Pagamento;
 import br.manga.model.Pedido;
 import br.manga.model.PedidoManga;
 
@@ -12,7 +13,7 @@ public record PedidoResponseDTO(
     Double valorTotal,
     String usuario,
     List<String> mangas,
-    String pagamento
+    Pagamento pagamento
 ) {
     public static PedidoResponseDTO valueOf(Pedido pedido) {
         if (pedido == null) return null;
@@ -27,7 +28,7 @@ public record PedidoResponseDTO(
                     .map(manga -> manga != null ? manga.getTitulo() : null)
                     .toList() 
                 : null,
-            pedido.getPagamento() != null ? pedido.getPagamento().getMetodoPagamento() : null
+            pedido.getPagamento()
         );
     }
 }

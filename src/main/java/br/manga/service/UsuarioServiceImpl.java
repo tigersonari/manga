@@ -1,11 +1,9 @@
 package br.manga.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.manga.dto.UsuarioDTO;
 import br.manga.dto.UsuarioResponseDTO;
-import br.manga.model.TipoUsuario;
 import br.manga.model.Usuario;
 import br.manga.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,9 +22,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
-        usuario.setSenhaHash(dto.senha()); // Em produção, use BCrypt!
+        usuario.setSenhaHash(dto.senhaHash());
         usuario.setEndereco(dto.endereco());
-        usuario.setTipoUsuario(TipoUsuario.valueOf(dto.idTipoUsuario().toString()));
 
         usuarioRepository.persist(usuario);
         return UsuarioResponseDTO.valueOf(usuario);
@@ -36,11 +33,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public void update(Long id, UsuarioDTO dto) {
         Usuario usuario = usuarioRepository.findById(id);
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado");
+        }
+
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
-        usuario.setSenhaHash(dto.senha());
+        usuario.setSenhaHash(dto.senhaHash());
         usuario.setEndereco(dto.endereco());
-        usuario.setTipoUsuario(TipoUsuario.valueOf(dto.idTipoUsuario().toString()));
     }
 
     @Override
@@ -54,17 +54,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioResponseDTO.valueOf(usuarioRepository.findById(id));
     }
 
-   @Override
-    public List<UsuarioResponseDTO> findByNome(String nome) {
-        List<Usuario> usuarios = List.of(usuarioRepository.findByNome(nome));
-        return usuarios.stream()
-            .map(usuario -> UsuarioResponseDTO.valueOf(usuario))
-            .collect(Collectors.toList());
-    }
-
     @Override
     public List<UsuarioResponseDTO> findAll() {
         return usuarioRepository.listAll().stream()
+            .map(UsuarioResponseDTO::valueOf)
+            .toList();
+    }
+
+    @Override
+    public List<UsuarioResponseDTO> findByNome(String nome) {
+        return usuarioRepository.findByNome(nome).stream()
             .map(UsuarioResponseDTO::valueOf)
             .toList();
     }

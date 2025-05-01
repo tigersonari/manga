@@ -60,7 +60,7 @@ public class PedidoServiceImpl implements PedidoService {
         }
 
         if (dto.idPagamento() != null) {
-            pedido.setPagamento(pagamentoRepository.findById(dto.idPagamento()));
+            pedido.setPagamento(pagamentoRepository.findById(dto.idPagamento() != null ? dto.idPagamento().longValue() : null));
         }
 
         if (pedido.getMangasComprados() != null) {

@@ -13,8 +13,8 @@ public class UsuarioRepository implements PanacheRepository<Usuario> {
         return find("email", email).firstResult();
     }
 
-    public Usuario findByNome(String nome) {
-        return find("nome LIKE ?1", "%" + nome + "%").firstResult();
+    public List<Usuario> findByNome(String nome) {
+        return find("nome LIKE ?1 AND tipo = 'USER'", "%" + nome + "%").list();
     }
 
     public Usuario findById(Long id) {
