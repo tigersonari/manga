@@ -22,6 +22,7 @@ public abstract class UsuarioBase extends DefaultEntity {
     private String email;
     private String senhaHash;
     private String endereco;
+    
     public Long getId() {
         return id;
     }

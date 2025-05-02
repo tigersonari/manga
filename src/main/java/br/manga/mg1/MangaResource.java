@@ -42,7 +42,7 @@ public class MangaResource {
 
     @GET
 @Path("/classificacao/{idClassificacao}")
-public Response findByClassificacao(@PathParam("idClassificacao") Long idClassificacao) {
+public Response findByClassificacao(@PathParam("idClassificacao") Integer idClassificacao) {
     return Response.ok(service.findByClassificacao(idClassificacao)).build();
 }
 

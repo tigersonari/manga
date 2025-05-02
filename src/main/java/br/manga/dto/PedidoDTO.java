@@ -7,6 +7,5 @@ public record PedidoDTO(
     String status,
     Double valorTotal,
     Long idUsuario,
-    List<Long> idsMangas,
-    Integer idPagamento
+    List<Long> idsMangas
 ) {}

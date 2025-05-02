@@ -9,14 +9,14 @@ public class TipoCapaConverter implements AttributeConverter<TipoCapa, Integer> 
 
     @Override
     public Integer convertToDatabaseColumn(TipoCapa tipoCapa) {
-        return tipoCapa == null ? null : tipoCapa.getID();
+        return tipoCapa == null ? null : tipoCapa.getId();
     }
 
     @Override
     public TipoCapa convertToEntityAttribute(Integer id) {
         if (id == null) return null;
         for (TipoCapa t : TipoCapa.values()) {
-            if (t.getID() == id) return t;
+            if (t.getId() == id) return t;
         }
         throw new IllegalArgumentException("ID de TipoCapa inválido: " + id);
     }

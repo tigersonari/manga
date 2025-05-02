@@ -8,7 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -30,8 +29,6 @@ public class Pedido extends DefaultEntity {
     @OneToMany(mappedBy = "pedido")
 private List<PedidoManga> mangasComprados; /*ATUALIZADO COM A NOVA ENTIDADE DE PEDIDO-MANGA */
 
-    @OneToOne(mappedBy = "pedido")
-    private Pagamento pagamento;
 
     @PositiveOrZero
     @Column(nullable = false)
@@ -77,14 +74,7 @@ private List<PedidoManga> mangasComprados; /*ATUALIZADO COM A NOVA ENTIDADE DE P
         this.mangasComprados = mangasComprados;
     }
 
-    public Pagamento getPagamento() {
-        return pagamento;
-    }
-
-    public void setPagamento(Pagamento pagamento) {
-        this.pagamento = pagamento;
-    }
-
+    
     public Double getValorTotal() {
         return valorTotal;
     }

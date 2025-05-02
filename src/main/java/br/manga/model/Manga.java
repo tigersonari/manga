@@ -1,14 +1,11 @@
 package br.manga.model;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -39,10 +36,6 @@ public class Manga extends DefaultEntity {
 
     private Classificacao classificacao;
 
-
-
-    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Avaliacao> avaliacoes;
 
     @ManyToOne
     @JoinColumn(name = "id_editora")
@@ -112,13 +105,6 @@ public class Manga extends DefaultEntity {
     }
 
 
-    public List<Avaliacao> getAvaliacoes() {
-        return avaliacoes;
-    }
-
-    public void setAvaliacoes(List<Avaliacao> avaliacoes) {
-        this.avaliacoes = avaliacoes;
-    }
 
     public Editora getEditora() {
         return editora;

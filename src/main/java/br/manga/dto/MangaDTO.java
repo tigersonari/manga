@@ -14,8 +14,8 @@ public record MangaDTO(
     Integer idEstoque,
     Integer idGenero,
     Integer idClassificacao,
-    Integer idEditora,
-    Integer idAutor
+    Long idEditora,
+    Long idAutor
 ) {}
 
 

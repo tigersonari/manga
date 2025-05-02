@@ -17,6 +17,9 @@ public class PedidoRepository implements PanacheRepository<Pedido> {
         return find("status", status).list();
     }
 
+public Pedido findByPedidoId(Long pedidoId) {
+    return find("pedido.id", pedidoId).firstResult();
+}
     public List<Pedido> findByUsuario(Long idUsuario) {
         return find("usuario.id", idUsuario).list();
     }

@@ -32,13 +32,12 @@ public class EdicaoServiceImpl implements EdicaoService {
         edicao.setLancamento(dto.lancamento());
         edicao.setDimensao(dto.dimensao());
         edicao.setTitulo(dto.titulo());
-        edicao.setFormato(Formato.fromId(dto.formatoId()));
-        edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
-        edicao.setStatus(Status.valueOf(dto.statusId().toString()));
+        edicao.setFormato(Formato.valueOf(dto.formatoId()));
+        edicao.setTipoCapa(TipoCapa.valueOf(dto.tipoCapaId().toString()));
+        edicao.setStatus(Status.valueOf(String.valueOf(dto.statusId())));
 
-        
         if (dto.mangaId() != null) {
-            edicao.setManga(mangaRepository.findById(dto.mangaId().longValue()));
+            edicao.setManga(mangaRepository.findById(dto.mangaId()));
         }
 
         edicaoRepository.persist(edicao);
@@ -54,12 +53,12 @@ public class EdicaoServiceImpl implements EdicaoService {
         edicao.setLancamento(dto.lancamento());
         edicao.setDimensao(dto.dimensao());
         edicao.setTitulo(dto.titulo());
-        edicao.setFormato(Formato.fromId(dto.formatoId()));
-        edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
+        edicao.setFormato(Formato.valueOf(dto.formatoId()));
+        edicao.setTipoCapa(TipoCapa.valueOf(dto.tipoCapaId().toString()));
         edicao.setStatus(Status.valueOf(dto.statusId().toString()));
 
         if (dto.mangaId() != null) {
-            edicao.setManga(mangaRepository.findById(dto.mangaId().longValue()));
+            edicao.setManga(mangaRepository.findById(dto.mangaId()));
         } else {
             edicao.setManga(null); 
         }

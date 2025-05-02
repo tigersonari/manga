@@ -4,16 +4,33 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Status {
-    FINALIZADO(1), 
-    EM_ANDAMENTO(2);
+    FINALIZADO(1, "Finalizado"), 
+    EM_ANDAMENTO(2, "Em Andamento");
 
-    private final int ID;
+    private final int id;
+    private final String nome;
 
-    Status(int ID) {
-        this.ID = ID;
+    Status(int id, String nome) {
+        this.id = id;
+        this.nome = nome;
     }
 
     public int getId() {
-        return ID;
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+
+    public static Status valueOf(Integer id) {
+        if (id == null)
+            return null;
+        for (Status s : Status.values()) {
+            if (s.getId() == id)
+                return s;
+        }
+        return null;
     }
 }

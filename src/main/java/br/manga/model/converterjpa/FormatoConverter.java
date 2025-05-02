@@ -9,14 +9,14 @@ public class FormatoConverter implements AttributeConverter<Formato, Integer> {
 
     @Override
     public Integer convertToDatabaseColumn(Formato formato) {
-        return formato == null ? null : formato.getID();
+        return formato == null ? null : formato.getId();
     }
 
     @Override
     public Formato convertToEntityAttribute(Integer id) {
         if (id == null) return null;
         for (Formato f : Formato.values()) {
-            if (f.getID() == id) return f;
+            if (f.getId() == id) return f;
         }
         throw new IllegalArgumentException("ID de Formato inválido: " + id);
     }

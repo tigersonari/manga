@@ -17,7 +17,7 @@ public class PagamentoRepository implements PanacheRepository<Pagamento> {
         return find("statusPagamento", status).list();
     }
 
-    public List<Pagamento> findByPedido(Long idPedido) {
+    public List<Pagamento> findByPedidoId(Long idPedido) {
         return find("pedido.id", idPedido).list();
     }
 

@@ -4,16 +4,33 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Estoque {
-    DISPONIVEL(1), 
-    INDISPONIVEL(2);
+    DISPONIVEL(1, "Disponível"), 
+    INDISPONIVEL(2, "Indisponível");
 
-    private final int ID; // Campo final
+    private final int id;
+    private final String nome;
 
-    Estoque(int ID) {
-        this.ID = ID;
+    Estoque(int id, String nome) {
+        this.id = id;
+        this.nome = nome;
     }
 
     public int getId() {
-        return ID;
+        return id;
     }
+
+    public String getNome() {
+        return nome;
+    }
+
+     public static Estoque valueOf(Integer id) {
+        if (id == null)
+            return null;
+        for (Estoque e : Estoque.values()) {
+            if (e.getId() == id)
+                return e;
+        }
+        return null;
+     }
+
 }

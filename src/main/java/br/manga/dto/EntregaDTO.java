@@ -6,5 +6,5 @@ public record EntregaDTO(
     @NotBlank String endereco,
     @NotBlank String codigoRastreio,
     String status,
-    Integer idPedido
+    Long idPedido
 ) {}
