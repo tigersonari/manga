@@ -10,6 +10,8 @@ public interface PedidoService {
     void update(Long id, PedidoDTO dto);
     void delete(Long id);
     PedidoResponseDTO findById(Long id);
-    List<PedidoResponseDTO> findByUsuario(Long idUsuario);
+    List<PedidoResponseDTO> findByUsuario(Long usuarioId);
+    List<PedidoResponseDTO> findByStatus(String status);
+    PedidoResponseDTO findByNumeroPedido(Long numeroPedido);
     List<PedidoResponseDTO> findAll();
 }

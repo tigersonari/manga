@@ -10,6 +10,9 @@ public interface EdicaoService {
     void update(Long id, EdicaoDTO dto);
     void delete(Long id);
     EdicaoResponseDTO findById(Long id);
-    List<EdicaoResponseDTO> findByManga(Long idManga);
+    List<EdicaoResponseDTO> findByManga(Long mangaId);
+    List<EdicaoResponseDTO> findByFormato(Integer formatoId);
+    List<EdicaoResponseDTO> findByStatus(Integer statusId);
+    EdicaoResponseDTO findByVolumeAndManga(Integer volume, Long mangaId);
     List<EdicaoResponseDTO> findAll();
 }

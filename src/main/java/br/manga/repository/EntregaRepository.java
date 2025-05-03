@@ -8,20 +8,17 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class EntregaRepository implements PanacheRepository<Entrega> {
-
-    public Entrega findByCodigoRastreio(String codigoRastreio) {
-        return find("codigoRastreio", codigoRastreio).firstResult();
+    
+    public List<Entrega> findByStatus(String status) {
+        return find("status", status).list();
     }
 
-    public List<Entrega> findByPedido(Long idPedido) {
-        return find("pedido.id", idPedido).list();
+    public Entrega findByCodigoRastreio(String codigo) {
+        return find("codigoRastreio", codigo).firstResult();
     }
 
-    public List<Entrega> findByEndereco(String endereco) {
-        return find("endereco LIKE ?1", "%" + endereco + "%").list();
+    public Entrega findByPedidoId(Long pedidoId) {
+        return find("pedido.id", pedidoId).firstResult();
     }
-
-    public List<Entrega> findAllEntregas() {
-        return listAll();
-    }
+    
 }

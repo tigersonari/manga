@@ -10,7 +10,8 @@ public interface EntregaService {
     void update(Long id, EntregaDTO dto);
     void delete(Long id);
     EntregaResponseDTO findById(Long id);
-    List<EntregaResponseDTO> findByPedido(Long idPedido);
-    EntregaResponseDTO findByCodigoRastreio(String codigoRastreio);
+    List<EntregaResponseDTO> findByStatus(String status);
+    EntregaResponseDTO findByCodigoRastreio(String codigo);
+    EntregaResponseDTO findByPedido(Long pedidoId);
     List<EntregaResponseDTO> findAll();
 }

@@ -34,9 +34,15 @@ public class PagamentoResource {
     }
 
     @GET
-    @Path("/pedido/{idPedido}")
-    public Response findByPedido(@PathParam("idPedido") Long idPedido) {
-        return Response.ok(service.findByPedido(idPedido)).build();
+    @Path("/status/{status}")
+    public Response findByStatus(@PathParam("status") String status) {
+        return Response.ok(service.findByStatus(status)).build();
+    }
+
+    @GET
+    @Path("/pedido/{pedidoId}")
+    public Response findByPedido(@PathParam("pedidoId") Long pedidoId) {
+        return Response.ok(service.findByPedido(pedidoId)).build();
     }
 
     @POST

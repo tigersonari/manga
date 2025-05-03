@@ -11,6 +11,6 @@ public interface AutorService {
     void delete(Long id);
     AutorResponseDTO findById(Long id);
     List<AutorResponseDTO> findByNome(String nome);
+    List<AutorResponseDTO> findByNacionalidade(String nacionalidade);
     List<AutorResponseDTO> findAll();
-    Object findByNacionalidade(String nacionalidade);
 }

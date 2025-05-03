@@ -4,12 +4,13 @@ import java.util.List;
 
 import br.manga.dto.MangaDTO;
 import br.manga.dto.MangaResponseDTO;
+import br.manga.model.Autor;
 import br.manga.model.Classificacao;
+import br.manga.model.Editora;
 import br.manga.model.Estoque;
 import br.manga.model.Genero;
 import br.manga.model.Manga;
 import br.manga.repository.AutorRepository;
-import br.manga.repository.EdicaoRepository;
 import br.manga.repository.EditoraRepository;
 import br.manga.repository.MangaRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,154 +24,92 @@ public class MangaServiceImpl implements MangaService {
 
     @Inject
     MangaRepository mangaRepository;
-
+    
     @Inject
     EditoraRepository editoraRepository;
-
+    
     @Inject
     AutorRepository autorRepository;
-
-    @Inject
-    EdicaoRepository edicaoRepository;
 
     @Override
     @Transactional
     public MangaResponseDTO create(MangaDTO dto) {
-        // Validação do campo idEstoque
-        Estoque estoque = Estoque.valueOf(dto.idEstoque());
-        if (estoque == null) {
-            throw new WebApplicationException(
-                "Valor inválido para idEstoque: " + dto.idEstoque(),
-                Response.Status.BAD_REQUEST
-            );
+       
+        if (mangaRepository.findByIsbn(dto.isbn()) != null) {
+            throw new WebApplicationException("ISBN já cadastrado", Response.Status.BAD_REQUEST);
         }
 
-        // Validação do campo idGenero
-        Genero genero = Genero.valueOf(dto.idGenero());
-        if (genero == null) {
-            throw new WebApplicationException(
-                "Valor inválido para idGenero: " + dto.idGenero() ,
-                Response.Status.BAD_REQUEST
-            );
-        }
-
-        // Validação do campo idClassificacao
-        Classificacao classificacao = Classificacao.valueOf(dto.idClassificacao().toString());
-        if (classificacao == null) {
-            throw new WebApplicationException(
-                "Valor inválido para idClassificacao: " + dto.idClassificacao() ,
-                Response.Status.BAD_REQUEST
-            );
-        }
-
-        Manga novoManga = new Manga();
-        novoManga.setTitulo(dto.titulo());
-        novoManga.setIsbn(dto.isbn());
-        novoManga.setLancamento(dto.lancamento());
-        novoManga.setPreco(dto.preco());
-        novoManga.setSinopse(dto.sinopse());
-        novoManga.setEstoque(estoque);
-        novoManga.setGenero(genero);
-        novoManga.setClassificacao(classificacao);
-
-        if (dto.idEditora() != null) {
-            novoManga.setEditora(editoraRepository.findById(dto.idEditora()));
-            if (novoManga.getEditora() == null) {
-                throw new WebApplicationException(
-                    "Editora não encontrada: " + dto.idEditora(),
-                    Response.Status.BAD_REQUEST
-                );
-            }
-        }
-
-        if (dto.idAutor() != null) {
-            novoManga.setAutor(autorRepository.findById(dto.idAutor()));
-            if (novoManga.getAutor() == null) {
-                throw new WebApplicationException(
-                    "Autor não encontrado: " + dto.idAutor(),
-                    Response.Status.BAD_REQUEST
-                );
-            }
-        }
-
-        mangaRepository.persist(novoManga);
-        return MangaResponseDTO.valueOf(novoManga);
+        Manga manga = new Manga();
+        setMangaFromDTO(manga, dto);
+        mangaRepository.persist(manga);
+        return MangaResponseDTO.valueOf(manga);
     }
 
     @Override
     @Transactional
     public void update(Long id, MangaDTO dto) {
-        Manga manga = mangaRepository.findById(id);
-        if (manga == null) {
-            throw new WebApplicationException("Mangá não encontrado: " + id, Response.Status.NOT_FOUND);
+        Manga manga = mangaRepository.findByIdOptional(id)
+                .orElseThrow(() -> new WebApplicationException("Manga não encontrado", Response.Status.NOT_FOUND));
+        
+        Manga existingManga = mangaRepository.findByIsbn(dto.isbn());
+        if (existingManga != null && !existingManga.getId().equals(id)) {
+            throw new WebApplicationException("ISBN já cadastrado", Response.Status.BAD_REQUEST);
         }
+        setMangaFromDTO(manga, dto);
+    }
 
-        // Validação do campo idEstoque
-        Estoque estoque = Estoque.valueOf(dto.idEstoque());
-        if (estoque == null) {
-            throw new WebApplicationException(
-                "Valor inválido para idEstoque: " + dto.idEstoque() ,
-                Response.Status.BAD_REQUEST
-            );
-        }
-
-        // Validação do campo idGenero
-        Genero genero = Genero.valueOf(dto.idGenero());
-        if (genero == null) {
-            throw new WebApplicationException(
-                "Valor inválido para idGenero: " + dto.idGenero() ,
-                Response.Status.BAD_REQUEST
-            );
-        }
-
-        // Validação do campo idClassificacao
-        Classificacao classificacao = Classificacao.valueOf(dto.idClassificacao().toString());
-        if (classificacao == null) {
-            throw new WebApplicationException(
-                "Valor inválido para idClassificacao: " + dto.idClassificacao() ,
-                Response.Status.BAD_REQUEST
-            );
-        }
-
+    private void setMangaFromDTO(Manga manga, MangaDTO dto) {
         manga.setTitulo(dto.titulo());
         manga.setIsbn(dto.isbn());
         manga.setLancamento(dto.lancamento());
         manga.setPreco(dto.preco());
         manga.setSinopse(dto.sinopse());
+
+        
+        Estoque estoque = Estoque.valueOf(dto.estoqueId());
+        if (estoque == null) {
+            throw new WebApplicationException("estoqueId inválido: " + dto.estoqueId(), Response.Status.BAD_REQUEST);
+        }
         manga.setEstoque(estoque);
+
+        Genero genero = Genero.valueOf(dto.generoId());
+        if (genero == null) {
+            throw new WebApplicationException("generoId inválido: " + dto.generoId(), Response.Status.BAD_REQUEST);
+        }
         manga.setGenero(genero);
+
+        Classificacao classificacao = Classificacao.valueOf(dto.classificacaoId());
+        if (classificacao == null) {
+            throw new WebApplicationException("classificacaoId inválido: " + dto.classificacaoId(), Response.Status.BAD_REQUEST);
+        }
         manga.setClassificacao(classificacao);
 
-        if (dto.idEditora() != null) {
-            manga.setEditora(editoraRepository.findById(dto.idEditora()));
-            if (manga.getEditora() == null) {
-                throw new WebApplicationException(
-                    "Editora não encontrada: " + dto.idEditora(),
-                    Response.Status.BAD_REQUEST
-                );
-            }
-        } else {
-            manga.setEditora(null);
+        
+        if (dto.editoraId() == null) {
+            throw new WebApplicationException("editoraId é obrigatório", Response.Status.BAD_REQUEST);
         }
+        Editora editora = editoraRepository.findById(dto.editoraId());
+        if (editora == null) {
+            throw new WebApplicationException("Editora com id " + dto.editoraId() + " não encontrada", Response.Status.NOT_FOUND);
+        }
+        manga.setEditora(editora);
 
-        if (dto.idAutor() != null) {
-            manga.setAutor(autorRepository.findById(dto.idAutor()));
-            if (manga.getAutor() == null) {
-                throw new WebApplicationException(
-                    "Autor não encontrado: " + dto.idAutor(),
-                    Response.Status.BAD_REQUEST
-                );
-            }
-        } else {
-            manga.setAutor(null);
+        
+        if (dto.autorId() == null) {
+            throw new WebApplicationException("autorId é obrigatório", Response.Status.BAD_REQUEST);
         }
+        Autor autor = autorRepository.findById(dto.autorId());
+        if (autor == null) {
+            throw new WebApplicationException("Autor com id " + dto.autorId() + " não encontrado", Response.Status.NOT_FOUND);
+        }
+        manga.setAutor(autor);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
         if (!mangaRepository.deleteById(id)) {
-            throw new WebApplicationException("Mangá não encontrado: " + id, Response.Status.NOT_FOUND);
+            throw new WebApplicationException("Manga não encontrado", Response.Status.NOT_FOUND);
         }
     }
 
@@ -178,52 +117,45 @@ public class MangaServiceImpl implements MangaService {
     public MangaResponseDTO findById(Long id) {
         Manga manga = mangaRepository.findById(id);
         if (manga == null) {
-            throw new WebApplicationException("Mangá não encontrado: " + id, Response.Status.NOT_FOUND);
+            throw new WebApplicationException("Manga não encontrado", Response.Status.NOT_FOUND);
         }
         return MangaResponseDTO.valueOf(manga);
     }
 
     @Override
     public List<MangaResponseDTO> findByTitulo(String titulo) {
-        Manga manga = mangaRepository.findByTitulo(titulo);
+        return mangaRepository.findByTitulo(titulo).stream()
+                .map(MangaResponseDTO::valueOf)
+                .toList();
+    }
+
+    @Override
+    public List<MangaResponseDTO> findByGenero(Integer generoId) {
+        return mangaRepository.findByGenero(generoId).stream()
+                .map(MangaResponseDTO::valueOf)
+                .toList();
+    }
+
+    @Override
+    public List<MangaResponseDTO> findByEditora(Long editoraId) {
+        return mangaRepository.findByEditora(editoraId).stream()
+                .map(MangaResponseDTO::valueOf)
+                .toList();
+    }
+
+    @Override
+    public MangaResponseDTO findByIsbn(String isbn) {
+        Manga manga = mangaRepository.findByIsbn(isbn);
         if (manga == null) {
-            return List.of();
+            throw new WebApplicationException("Manga não encontrado", Response.Status.NOT_FOUND);
         }
-        return List.of(MangaResponseDTO.valueOf(manga));
-    }
-
-    @Override
-    public List<MangaResponseDTO> findByClassificacao(Integer idClassificacao) {
-        return mangaRepository.findByClassificacao(idClassificacao.longValue()).stream()
-            .map(MangaResponseDTO::valueOf)
-            .toList();
-    }
-
-    @Override
-    public List<MangaResponseDTO> findByEditora(Long idEditora) {
-        return mangaRepository.findByEditora(idEditora).stream()
-            .map(MangaResponseDTO::valueOf)
-            .toList();
-    }
-
-    @Override
-    public List<MangaResponseDTO> findByGenero(Integer idGenero) {
-        Genero genero = Genero.valueOf(idGenero);
-        if (genero == null) {
-            throw new WebApplicationException(
-                "Valor inválido para idGenero: " + idGenero + ". Valores válidos: 1 a 2.",
-                Response.Status.BAD_REQUEST
-            );
-        }
-        return mangaRepository.findByGenero(genero.toString()).stream()
-            .map(MangaResponseDTO::valueOf)
-            .toList();
+        return MangaResponseDTO.valueOf(manga);
     }
 
     @Override
     public List<MangaResponseDTO> findAll() {
         return mangaRepository.listAll().stream()
-            .map(MangaResponseDTO::valueOf)
-            .toList();
+                .map(MangaResponseDTO::valueOf)
+                .toList();
     }
 }

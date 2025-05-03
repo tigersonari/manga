@@ -19,24 +19,38 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class EdicaoResource {
 
-    @Inject
-    EdicaoService service;
+    @Inject EdicaoService service;
 
     @GET
     public Response findAll() {
         return Response.ok(service.findAll()).build();
     }
 
-    @GET
-    @Path("/{id}")
+    @GET @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
         return Response.ok(service.findById(id)).build();
     }
 
-    @GET
-    @Path("/manga/{idManga}")
-    public Response findByManga(@PathParam("idManga") Long idManga) {
-        return Response.ok(service.findByManga(idManga)).build();
+    @GET @Path("/manga/{mangaId}")
+    public Response findByManga(@PathParam("mangaId") Long mangaId) {
+        return Response.ok(service.findByManga(mangaId)).build();
+    }
+
+    @GET @Path("/formato/{formatoId}")
+    public Response findByFormato(@PathParam("formatoId") Integer formatoId) {
+        return Response.ok(service.findByFormato(formatoId)).build();
+    }
+
+    @GET @Path("/status/{statusId}")
+    public Response findByStatus(@PathParam("statusId") Integer statusId) {
+        return Response.ok(service.findByStatus(statusId)).build();
+    }
+
+    @GET @Path("/volume/{volume}/manga/{mangaId}")
+    public Response findByVolumeAndManga(
+        @PathParam("volume") Integer volume,
+        @PathParam("mangaId") Long mangaId) {
+        return Response.ok(service.findByVolumeAndManga(volume, mangaId)).build();
     }
 
     @POST
@@ -46,15 +60,13 @@ public class EdicaoResource {
             .build();
     }
 
-    @PUT
-    @Path("/{id}")
+    @PUT @Path("/{id}")
     public Response update(@PathParam("id") Long id, EdicaoDTO dto) {
         service.update(id, dto);
         return Response.noContent().build();
     }
 
-    @DELETE
-    @Path("/{id}")
+    @DELETE @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.noContent().build();

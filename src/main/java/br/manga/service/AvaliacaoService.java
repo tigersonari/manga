@@ -10,6 +10,8 @@ public interface AvaliacaoService {
     void update(Long id, AvaliacaoDTO dto);
     void delete(Long id);
     AvaliacaoResponseDTO findById(Long id);
-    List<AvaliacaoResponseDTO> findByManga(Long idManga);
+    List<AvaliacaoResponseDTO> findByManga(Long mangaId);
+    List<AvaliacaoResponseDTO> findByNotaGreaterThanEqual(Double nota); // avaliações com nota > ou = a nota
+    Double calcularMediaNotas(Long mangaId);
     List<AvaliacaoResponseDTO> findAll();
 }

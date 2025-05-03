@@ -23,27 +23,22 @@ public class AdminResource {
     AdminService service;
 
     @GET
-    public Response findAll() {
-        return Response.ok(service.findAll()).build();
-    }
-
-    @GET
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
         return Response.ok(service.findById(id)).build();
     }
 
     @GET
-    @Path("/nome/{nome}")
-    public Response findByNome(@PathParam("nome") String nome) {
-        return Response.ok(service.findByNome(nome)).build();
+    @Path("/permissao/{permissao}")
+    public Response findByPermissao(@PathParam("permissao") String permissao) {
+        return Response.ok(service.findByPermissao(permissao)).build();
     }
 
     @POST
     public Response create(AdminDTO dto) {
         return Response.status(Response.Status.CREATED)
-            .entity(service.create(dto))
-            .build();
+                .entity(service.create(dto))
+                .build();
     }
 
     @PUT

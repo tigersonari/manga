@@ -10,6 +10,5 @@ public interface AdminService {
     void update(Long id, AdminDTO dto);
     void delete(Long id);
     AdminResponseDTO findById(Long id);
-    List<AdminResponseDTO> findAll();
-    AdminResponseDTO findByNome(String nome);
+    List<AdminResponseDTO> findByPermissao(String permissao);
 }

@@ -11,7 +11,6 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -20,24 +19,31 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class EditoraResource {
 
-    @Inject
-    EditoraService service;
+    @Inject EditoraService service;
 
     @GET
     public Response findAll() {
         return Response.ok(service.findAll()).build();
     }
 
-    @GET
-    @Path("/{id}")
+    @GET @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
         return Response.ok(service.findById(id)).build();
     }
 
-    @GET
-    @Path("/search")
-    public Response findByNome(@QueryParam("nome") String nome) {
+    @GET @Path("/nome/{nome}")
+    public Response findByNome(@PathParam("nome") String nome) {
         return Response.ok(service.findByNome(nome)).build();
+    }
+
+    @GET @Path("/sede/{sede}")
+    public Response findBySede(@PathParam("sede") String sede) {
+        return Response.ok(service.findBySede(sede)).build();
+    }
+
+    @GET @Path("/ano-fundacao/{ano}")
+    public Response findByAnoFundacao(@PathParam("ano") int ano) {
+        return Response.ok(service.findByAnoFundacao(ano)).build();
     }
 
     @POST
@@ -47,18 +53,15 @@ public class EditoraResource {
             .build();
     }
 
-    @PUT
-    @Path("/{id}")
+    @PUT @Path("/{id}")
     public Response update(@PathParam("id") Long id, EditoraDTO dto) {
         service.update(id, dto);
         return Response.noContent().build();
     }
 
-    @DELETE
-    @Path("/{id}")
+    @DELETE @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.noContent().build();
     }
 }
-

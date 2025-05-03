@@ -8,23 +8,16 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class PedidoRepository implements PanacheRepository<Pedido> {
-
-    public Pedido findByNumeroPedido(Long numeroPedido) {
-        return find("numeroPedido", numeroPedido).firstResult();
+    
+    public List<Pedido> findByUsuario(Long usuarioId) {
+        return find("usuario.id", usuarioId).list();
     }
 
     public List<Pedido> findByStatus(String status) {
         return find("status", status).list();
     }
 
-public Pedido findByPedidoId(Long pedidoId) {
-    return find("pedido.id", pedidoId).firstResult();
-}
-    public List<Pedido> findByUsuario(Long idUsuario) {
-        return find("usuario.id", idUsuario).list();
-    }
-
-    public List<Pedido> findAllPedidos() {
-        return listAll();
+    public Pedido findByNumeroPedido(Long numeroPedido) {
+        return find("numeroPedido", numeroPedido).firstResult();
     }
 }

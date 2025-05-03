@@ -34,6 +34,12 @@ public class UsuarioResource {
     }
 
     @GET
+    @Path("/email/{email}")
+    public Response findByEmail(@PathParam("email") String email) {
+        return Response.ok(service.findByEmail(email)).build();
+    }
+
+    @GET
     @Path("/nome/{nome}")
     public Response findByNome(@PathParam("nome") String nome) {
         return Response.ok(service.findByNome(nome)).build();
@@ -42,8 +48,8 @@ public class UsuarioResource {
     @POST
     public Response create(UsuarioDTO dto) {
         return Response.status(Response.Status.CREATED)
-            .entity(service.create(dto))
-            .build();
+                .entity(service.create(dto))
+                .build();
     }
 
     @PUT

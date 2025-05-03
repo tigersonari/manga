@@ -10,6 +10,7 @@ public interface PagamentoService {
     void update(Long id, PagamentoDTO dto);
     void delete(Long id);
     PagamentoResponseDTO findById(Long id);
-    List<PagamentoResponseDTO> findByPedido(Long idPedido);
-    List<PagamentoResponseDTO> findAll();
+    List<PagamentoResponseDTO> findByStatus(String status);
+    PagamentoResponseDTO findByPedido(Long pedidoId);
+    Object findAll();
 }

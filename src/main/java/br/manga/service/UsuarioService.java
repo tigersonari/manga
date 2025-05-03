@@ -10,7 +10,7 @@ public interface UsuarioService {
     void update(Long id, UsuarioDTO dto);
     void delete(Long id);
     UsuarioResponseDTO findById(Long id);
+    UsuarioResponseDTO findByEmail(String email);
     List<UsuarioResponseDTO> findByNome(String nome);
     List<UsuarioResponseDTO> findAll();
 }
-

@@ -11,7 +11,6 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -35,22 +34,22 @@ public class AutorResource {
     }
 
     @GET
-    @Path("/nome")
-    public Response findByNome(@QueryParam("nome") String nome) {
+    @Path("/nome/{nome}")
+    public Response findByNome(@PathParam("nome") String nome) {
         return Response.ok(service.findByNome(nome)).build();
     }
 
     @GET
-    @Path("/nacionalidade")
-    public Response findByNacionalidade(@QueryParam("nacionalidade") String nacionalidade) {
+    @Path("/nacionalidade/{nacionalidade}")
+    public Response findByNacionalidade(@PathParam("nacionalidade") String nacionalidade) {
         return Response.ok(service.findByNacionalidade(nacionalidade)).build();
     }
 
     @POST
     public Response create(AutorDTO dto) {
         return Response.status(Response.Status.CREATED)
-            .entity(service.create(dto))
-            .build();
+                .entity(service.create(dto))
+                .build();
     }
 
     @PUT

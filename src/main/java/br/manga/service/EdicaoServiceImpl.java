@@ -6,6 +6,7 @@ import br.manga.dto.EdicaoDTO;
 import br.manga.dto.EdicaoResponseDTO;
 import br.manga.model.Edicao;
 import br.manga.model.Formato;
+import br.manga.model.Manga;
 import br.manga.model.Status;
 import br.manga.model.TipoCapa;
 import br.manga.repository.EdicaoRepository;
@@ -13,12 +14,13 @@ import br.manga.repository.MangaRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class EdicaoServiceImpl implements EdicaoService {
 
     @Inject
-    EdicaoRepository edicaoRepository;
+    EdicaoRepository repository;
 
     @Inject
     MangaRepository mangaRepository;
@@ -26,6 +28,9 @@ public class EdicaoServiceImpl implements EdicaoService {
     @Override
     @Transactional
     public EdicaoResponseDTO create(EdicaoDTO dto) {
+        Manga manga = mangaRepository.findByIdOptional(dto.mangaId())
+            .orElseThrow(() -> new NotFoundException("Mangá não encontrado"));
+        
         Edicao edicao = new Edicao();
         edicao.setVolume(dto.volume());
         edicao.setIdioma(dto.idioma());
@@ -33,58 +38,81 @@ public class EdicaoServiceImpl implements EdicaoService {
         edicao.setDimensao(dto.dimensao());
         edicao.setTitulo(dto.titulo());
         edicao.setFormato(Formato.valueOf(dto.formatoId()));
-        edicao.setTipoCapa(TipoCapa.valueOf(dto.tipoCapaId().toString()));
-        edicao.setStatus(Status.valueOf(String.valueOf(dto.statusId())));
-
-        if (dto.mangaId() != null) {
-            edicao.setManga(mangaRepository.findById(dto.mangaId()));
-        }
-
-        edicaoRepository.persist(edicao);
+        edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
+        edicao.setStatus(Status.valueOf(dto.statusId()));
+        edicao.setManga(manga);
+        
+        repository.persist(edicao);
         return EdicaoResponseDTO.valueOf(edicao);
     }
 
     @Override
     @Transactional
     public void update(Long id, EdicaoDTO dto) {
-        Edicao edicao = edicaoRepository.findById(id);
+        Edicao edicao = repository.findByIdOptional(id)
+            .orElseThrow(() -> new NotFoundException("Edição não encontrada"));
+        
         edicao.setVolume(dto.volume());
         edicao.setIdioma(dto.idioma());
         edicao.setLancamento(dto.lancamento());
         edicao.setDimensao(dto.dimensao());
         edicao.setTitulo(dto.titulo());
         edicao.setFormato(Formato.valueOf(dto.formatoId()));
-        edicao.setTipoCapa(TipoCapa.valueOf(dto.tipoCapaId().toString()));
-        edicao.setStatus(Status.valueOf(dto.statusId().toString()));
-
-        if (dto.mangaId() != null) {
-            edicao.setManga(mangaRepository.findById(dto.mangaId()));
-        } else {
-            edicao.setManga(null); 
-        }
+        edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
+        edicao.setStatus(Status.valueOf(dto.statusId()));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        edicaoRepository.deleteById(id);
+        if (!repository.deleteById(id)) {
+            throw new NotFoundException("Edição não encontrada");
+        }
     }
 
     @Override
     public EdicaoResponseDTO findById(Long id) {
-        return EdicaoResponseDTO.valueOf(edicaoRepository.findById(id));
+        return EdicaoResponseDTO.valueOf(
+            repository.findByIdOptional(id)
+                .orElseThrow(() -> new NotFoundException("Edição não encontrada"))
+        );
     }
 
     @Override
     public List<EdicaoResponseDTO> findByManga(Long mangaId) {
-        return edicaoRepository.findByManga(mangaId).stream()
+        return repository.find("manga.id", mangaId)
+            .stream()
             .map(EdicaoResponseDTO::valueOf)
             .toList();
     }
 
     @Override
+    public List<EdicaoResponseDTO> findByFormato(Integer formatoId) {
+        return repository.find("formato.id", formatoId)
+            .stream()
+            .map(EdicaoResponseDTO::valueOf)
+            .toList();
+    }
+
+    @Override
+    public List<EdicaoResponseDTO> findByStatus(Integer statusId) {
+        return repository.find("status.id", statusId)
+            .stream()
+            .map(EdicaoResponseDTO::valueOf)
+            .toList();
+    }
+
+    @Override
+    public EdicaoResponseDTO findByVolumeAndManga(Integer volume, Long mangaId) {
+        return EdicaoResponseDTO.valueOf(
+            repository.find("volume = ?1 and manga.id = ?2", volume, mangaId).firstResult()
+        );
+    }
+
+    @Override
     public List<EdicaoResponseDTO> findAll() {
-        return edicaoRepository.listAll().stream()
+        return repository.listAll()
+            .stream()
             .map(EdicaoResponseDTO::valueOf)
             .toList();
     }

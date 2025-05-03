@@ -11,8 +11,8 @@ public interface MangaService {
     void delete(Long id);
     MangaResponseDTO findById(Long id);
     List<MangaResponseDTO> findByTitulo(String titulo);
-    List<MangaResponseDTO> findByGenero(Integer idGenero);
-    List<MangaResponseDTO> findByClassificacao(Integer idClassificacao);
-    List<MangaResponseDTO> findByEditora(Long idEditora);
+    List<MangaResponseDTO> findByGenero(Integer generoId);
+    List<MangaResponseDTO> findByEditora(Long editoraId);
+    MangaResponseDTO findByIsbn(String isbn);
     List<MangaResponseDTO> findAll();
 }

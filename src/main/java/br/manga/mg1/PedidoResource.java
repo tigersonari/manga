@@ -34,16 +34,28 @@ public class PedidoResource {
     }
 
     @GET
-    @Path("/usuario/{idUsuario}")
-    public Response findByUsuario(@PathParam("idUsuario") Long idUsuario) {
-        return Response.ok(service.findByUsuario(idUsuario)).build();
+    @Path("/usuario/{usuarioId}")
+    public Response findByUsuario(@PathParam("usuarioId") Long usuarioId) {
+        return Response.ok(service.findByUsuario(usuarioId)).build();
+    }
+
+    @GET
+    @Path("/status/{status}")
+    public Response findByStatus(@PathParam("status") String status) {
+        return Response.ok(service.findByStatus(status)).build();
+    }
+
+    @GET
+    @Path("/numero/{numeroPedido}")
+    public Response findByNumeroPedido(@PathParam("numeroPedido") Long numeroPedido) {
+        return Response.ok(service.findByNumeroPedido(numeroPedido)).build();
     }
 
     @POST
     public Response create(PedidoDTO dto) {
         return Response.status(Response.Status.CREATED)
-            .entity(service.create(dto))
-            .build();
+                .entity(service.create(dto))
+                .build();
     }
 
     @PUT
@@ -60,5 +72,3 @@ public class PedidoResource {
         return Response.noContent().build();
     }
 }
-
-/*add get pedidos por status */

@@ -11,5 +11,7 @@ public interface EditoraService {
     void delete(Long id);
     EditoraResponseDTO findById(Long id);
     List<EditoraResponseDTO> findByNome(String nome);
+    List<EditoraResponseDTO> findBySede(String sede);
+    List<EditoraResponseDTO> findByAnoFundacao(int ano);
     List<EditoraResponseDTO> findAll();
 }

@@ -6,7 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record AvaliacaoDTO(
-    @Min(0) @Max(10) Double nota,
-    @NotBlank String comentario,
-    @NotNull Long mangaId
+    @NotNull(message = "nota não pode ser nula")
+    @Min(value = 0, message = "nota mínima é 0")
+    @Max(value = 10, message = "nota máxima é 10")
+    Double nota,
+    
+    @NotBlank(message = "insira um comentário")
+    String comentario,
+    
+    @NotNull(message = "mangá é obbrigatório")
+    Long mangaId
 ) {}

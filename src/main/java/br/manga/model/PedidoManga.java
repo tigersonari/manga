@@ -1,4 +1,3 @@
-
 package br.manga.model;
 
 import jakarta.persistence.Column;
@@ -29,6 +28,9 @@ public class PedidoManga {
     @ManyToOne
     @JoinColumn(name = "id_manga", nullable = false, insertable = false, updatable = false)
     private Manga mangaEntity;
+
+    @Column(name = "quantidade", nullable = false)
+    private Integer quantidade;
 
     public Long getPedido() {
         return pedido;
@@ -64,4 +66,11 @@ public class PedidoManga {
         this.manga = mangaEntity != null ? mangaEntity.getId() : null;
     }
 
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
 }
