@@ -4,23 +4,23 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Genero {
-    SHOUNEN(1, "Shounen"),
-    SHOUJO(2, "Shoujo"),
-    SEINEN(3, "Seinen"),
-    JOSEI(4, "Josei"),
-    ISEKAI(5, "Isekai"),
-    AVENTURA(6, "Aventura"),
-    ACAO(7, "Ação"),
-    COMEDIA(8, "Comédia"),
-    DRAMA(9, "Drama"),
-    FANTASIA(10, "Fantasia"),
-    MISTERIO(11, "Mistério"),
-    ROMANCE(12, "Romance"),
-    MARVEL(13, "Marvel"),
-    DC(14, "DC"),
-    HEROI(15, "Herói"),;
+    SHOUNEN(0, "Shounen"),
+    SHOUJO(1, "Shoujo"),
+    SEINEN(2, "Seinen"),
+    JOSEI(3, "Josei"),
+    ISEKAI(4, "Isekai"),
+    AVENTURA(5, "Aventura"),
+    ACAO(6, "Ação"),
+    COMEDIA(7, "Comédia"),
+    DRAMA(8, "Drama"),
+    FANTASIA(9, "Fantasia"),
+    MISTERIO(10, "Mistério"),
+    ROMANCE(11, "Romance"),
+    MARVEL(12, "Marvel"),
+    DC(13, "DC"),
+    HEROI(14, "Herói"),;
 
-    private int id;
+    private final int id;
     private final String nome;
 
     Genero(int id, String nome) {

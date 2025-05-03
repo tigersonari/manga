@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Estoque {
-    DISPONIVEL(1, "Disponível"), 
-    INDISPONIVEL(2, "Indisponível");
+    DISPONIVEL(0, "Disponível"), 
+    INDISPONIVEL(1, "Indisponível");
 
     private final int id;
     private final String nome;

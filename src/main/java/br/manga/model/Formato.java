@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Formato {
-    FISICO(1, "Físico"), 
-    DIGITAL(2, "Digital"),;
+    FISICO(0, "Físico"), 
+    DIGITAL(1, "Digital"),;
 
     private final int id;
     private final String nome;

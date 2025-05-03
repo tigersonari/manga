@@ -5,12 +5,13 @@ import java.util.List;
 
 import br.manga.model.Pedido;
 import br.manga.model.PedidoManga;
+import br.manga.model.Usuario;
 
 public record PedidoResponseDTO(
     Long numeroPedido,
     String status,
     Double valorTotal,
-    String usuario,
+    Usuario usuario,
     List<String> mangas
 ) {
     public static PedidoResponseDTO valueOf(Pedido pedido) {
@@ -19,7 +20,7 @@ public record PedidoResponseDTO(
             pedido.getNumeroPedido(),
             pedido.getStatus(),
             pedido.getValorTotal(),
-            pedido.getUsuario() != null ? pedido.getUsuario().getNome() : null,
+            pedido.getUsuario(),
             pedido.getMangasComprados() != null 
                 ? pedido.getMangasComprados().stream()
                     .map(PedidoManga::getMangaEntity)

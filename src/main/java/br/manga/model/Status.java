@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Status {
-    FINALIZADO(1, "Finalizado"), 
-    EM_ANDAMENTO(2, "Em Andamento");
+    FINALIZADO(0, "Finalizado"), 
+    EM_ANDAMENTO(1, "Em Andamento");
 
     private final int id;
     private final String nome;

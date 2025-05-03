@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum TipoCapa {
-    DURA(1, "Dura"), 
-    MOLE(2, "Mole"),;
+    DURA(0, "Dura"), 
+    MOLE(1, "Mole"),;
 
     private final int id;
     private final String nome;

@@ -10,7 +10,6 @@ import br.manga.model.Manga;
 import br.manga.model.Pedido;
 import br.manga.model.PedidoManga;
 import br.manga.repository.MangaRepository;
-import br.manga.repository.PagamentoRepository;
 import br.manga.repository.PedidoRepository;
 import br.manga.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,8 +28,6 @@ public class PedidoServiceImpl implements PedidoService {
     @Inject
     MangaRepository mangaRepository;
 
-    @Inject
-    PagamentoRepository pagamentoRepository;
 
     @Override
     @Transactional

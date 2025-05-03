@@ -68,7 +68,7 @@ public class MangaServiceImpl implements MangaService {
         novoManga.setIsbn(dto.isbn());
         novoManga.setLancamento(dto.lancamento());
         novoManga.setPreco(dto.preco());
-        novoManga.setSinopse(dto.sinopse().toString());
+        novoManga.setSinopse(dto.sinopse());
         novoManga.setEstoque(estoque);
         novoManga.setGenero(genero);
         novoManga.setClassificacao(classificacao);
