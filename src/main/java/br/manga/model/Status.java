@@ -25,11 +25,9 @@ public enum Status {
 
 
     public static Status valueOf(Integer id) {
-        if (id == null)
-            return null;
+        if (id == null) return null;
         for (Status s : Status.values()) {
-            if (s.getId() == id)
-                return s;
+            if (s.getId() == id) return s;
         }
         return null;
     }

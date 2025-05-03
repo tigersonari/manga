@@ -23,15 +23,13 @@ public enum Formato {
         return nome;
     }
 
-     public static Formato valueOf(Integer id) {
-        if (id == null)
-            return null;
+    public static Formato valueOf(Integer id) {
+        if (id == null) return null;
         for (Formato f : Formato.values()) {
-            if (f.getId() == id)
-                return f;
+            if (f.getId() == id) return f;
         }
         return null;
-     }
+    }
 
     
 }

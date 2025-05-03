@@ -23,14 +23,12 @@ public enum Estoque {
         return nome;
     }
 
-     public static Estoque valueOf(Integer id) {
-        if (id == null)
-            return null;
+    public static Estoque valueOf(Integer id) {
+        if (id == null) return null;
         for (Estoque e : Estoque.values()) {
-            if (e.getId() == id)
-                return e;
+            if (e.getId() == id) return e;
         }
         return null;
-     }
+    }
 
 }

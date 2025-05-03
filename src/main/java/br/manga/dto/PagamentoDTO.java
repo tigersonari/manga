@@ -16,5 +16,5 @@ public record PagamentoDTO(
     LocalDate dataConfirmacao,
     
     @NotNull(message = "pedido não pode ser nulo")
-    Long pedidoId
-) {}
+    Long pedidoId 
+){}

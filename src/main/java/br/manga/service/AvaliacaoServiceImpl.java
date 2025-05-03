@@ -8,6 +8,7 @@ import br.manga.model.Avaliacao;
 import br.manga.model.Manga;
 import br.manga.repository.AvaliacaoRepository;
 import br.manga.repository.MangaRepository;
+import br.manga.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -22,17 +23,19 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     @Inject
     MangaRepository mangaRepository;
 
+    @Inject
+    UsuarioRepository usuarioRepository;
+
     @Override
     @Transactional
     public AvaliacaoResponseDTO create(AvaliacaoDTO dto) {
         Manga manga = mangaRepository.findByIdOptional(dto.mangaId())
-            .orElseThrow(() -> new NotFoundException("Mangá não encontrado"));
-        
+                .orElseThrow(() -> new NotFoundException("Mangá não encontrado"));
+
         Avaliacao avaliacao = new Avaliacao();
+        avaliacao.setManga(manga);
         avaliacao.setNota(dto.nota());
         avaliacao.setComentario(dto.comentario());
-        avaliacao.setManga(manga);
-        
         repository.persist(avaliacao);
         return AvaliacaoResponseDTO.valueOf(avaliacao);
     }
@@ -41,7 +44,11 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     @Transactional
     public void update(Long id, AvaliacaoDTO dto) {
         Avaliacao avaliacao = repository.findByIdOptional(id)
-            .orElseThrow(() -> new NotFoundException("Avaliação não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Avaliação não encontrada"));
+        Manga manga = mangaRepository.findByIdOptional(dto.mangaId())
+                .orElseThrow(() -> new NotFoundException("Mangá não encontrado"));
+
+        avaliacao.setManga(manga);
         avaliacao.setNota(dto.nota());
         avaliacao.setComentario(dto.comentario());
     }
@@ -57,39 +64,44 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     @Override
     public AvaliacaoResponseDTO findById(Long id) {
         return AvaliacaoResponseDTO.valueOf(
-            repository.findByIdOptional(id)
-                .orElseThrow(() -> new NotFoundException("Avaliação não encontrada"))
+                repository.findByIdOptional(id)
+                        .orElseThrow(() -> new NotFoundException("Avaliação não encontrada"))
         );
     }
 
     @Override
     public List<AvaliacaoResponseDTO> findByManga(Long mangaId) {
         return repository.find("manga.id", mangaId)
-            .stream()
-            .map(AvaliacaoResponseDTO::valueOf)
-            .toList();
+                .stream()
+                .map(AvaliacaoResponseDTO::valueOf)
+                .toList();
     }
 
     @Override
     public List<AvaliacaoResponseDTO> findByNotaGreaterThanEqual(Double nota) {
         return repository.find("nota >= ?1", nota)
-            .stream()
-            .map(AvaliacaoResponseDTO::valueOf)
-            .toList();
+                .stream()
+                .map(AvaliacaoResponseDTO::valueOf)
+                .toList();
     }
 
     @Override
     public Double calcularMediaNotas(Long mangaId) {
-        return repository.find("select avg(nota) from Avaliacao where manga.id = ?1", mangaId)
-            .project(Double.class)
-            .firstResult();
+        List<Avaliacao> avaliacoes = repository.find("manga.id", mangaId).list();
+        if (avaliacoes.isEmpty()) {
+            return 0.0;
+        }
+        return avaliacoes.stream()
+                .mapToDouble(Avaliacao::getNota)
+                .average()
+                .orElse(0.0);
     }
 
     @Override
     public List<AvaliacaoResponseDTO> findAll() {
         return repository.listAll()
-            .stream()
-            .map(AvaliacaoResponseDTO::valueOf)
-            .toList();
+                .stream()
+                .map(AvaliacaoResponseDTO::valueOf)
+                .toList();
     }
 }

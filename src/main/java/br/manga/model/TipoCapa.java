@@ -15,19 +15,20 @@ public enum TipoCapa {
         this.nome = nome;
     }
 
-    public static TipoCapa fromId(Integer id) {
-        if (id == null) return null;
-        for (TipoCapa t : values()) {
-            if (t.id == id) return t;
-        }
-        throw new IllegalArgumentException("ID inválido: " + id);
-    }
-
     public int getId() {
         return id;
     }
 
     public String getNome() {
         return nome;
+    }
+
+    public static TipoCapa fromId(Integer id) {
+        for (TipoCapa tipoCapa : values()) {
+            if (tipoCapa.ordinal() == id) {
+                return tipoCapa;
+            }
+        }
+        throw new IllegalArgumentException("Invalid TipoCapa ID: " + id);
     }
 }

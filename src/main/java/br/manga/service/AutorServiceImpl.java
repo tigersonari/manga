@@ -9,6 +9,7 @@ import br.manga.repository.AutorRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class AutorServiceImpl implements AutorService {
@@ -22,7 +23,6 @@ public class AutorServiceImpl implements AutorService {
         Autor autor = new Autor();
         autor.setNome(dto.nome());
         autor.setNacionalidade(dto.nacionalidade());
-        
         repository.persist(autor);
         return AutorResponseDTO.valueOf(autor);
     }
@@ -31,7 +31,7 @@ public class AutorServiceImpl implements AutorService {
     @Transactional
     public void update(Long id, AutorDTO dto) {
         Autor autor = repository.findByIdOptional(id)
-                .orElseThrow(() -> new RuntimeException("Autor não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Autor não encontrado"));
         autor.setNome(dto.nome());
         autor.setNacionalidade(dto.nacionalidade());
     }
@@ -39,31 +39,39 @@ public class AutorServiceImpl implements AutorService {
     @Override
     @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+        if (!repository.deleteById(id)) {
+            throw new NotFoundException("Autor não encontrado");
+        }
     }
 
     @Override
     public AutorResponseDTO findById(Long id) {
-        return AutorResponseDTO.valueOf(repository.findById(id));
+        return AutorResponseDTO.valueOf(
+                repository.findByIdOptional(id)
+                        .orElseThrow(() -> new NotFoundException("Autor não encontrado"))
+        );
     }
 
     @Override
     public List<AutorResponseDTO> findByNome(String nome) {
-        return repository.findByNome(nome).stream()
+        return repository.find("nome like ?1", "%" + nome + "%")
+                .stream()
                 .map(AutorResponseDTO::valueOf)
                 .toList();
     }
 
     @Override
     public List<AutorResponseDTO> findByNacionalidade(String nacionalidade) {
-        return repository.findByNacionalidade(nacionalidade).stream()
+        return repository.find("nacionalidade like ?1", "%" + nacionalidade + "%")
+                .stream()
                 .map(AutorResponseDTO::valueOf)
                 .toList();
     }
 
     @Override
     public List<AutorResponseDTO> findAll() {
-        return repository.listAll().stream()
+        return repository.listAll()
+                .stream()
                 .map(AutorResponseDTO::valueOf)
                 .toList();
     }

@@ -39,11 +39,9 @@ public enum Genero {
 
 
     public static Genero valueOf(Integer id) {
-        if (id == null)
-            return null;
+        if (id == null) return null;
         for (Genero g : Genero.values()) {
-            if (g.getId().equals(id))
-                return g;
+            if (g.getId() == id) return g;
         }
         return null;
     }
