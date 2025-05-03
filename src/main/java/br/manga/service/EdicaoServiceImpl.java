@@ -15,6 +15,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 
 @ApplicationScoped
 public class EdicaoServiceImpl implements EdicaoService {
@@ -30,20 +31,28 @@ public class EdicaoServiceImpl implements EdicaoService {
     public EdicaoResponseDTO create(EdicaoDTO dto) {
         Manga manga = mangaRepository.findByIdOptional(dto.mangaId())
             .orElseThrow(() -> new NotFoundException("Mangá não encontrado"));
-        
-        Edicao edicao = new Edicao();
-        edicao.setVolume(dto.volume());
-        edicao.setIdioma(dto.idioma());
-        edicao.setLancamento(dto.lancamento());
-        edicao.setDimensao(dto.dimensao());
-        edicao.setTitulo(dto.titulo());
-        edicao.setFormato(Formato.valueOf(dto.formatoId()));
-        edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
-        edicao.setStatus(Status.valueOf(dto.statusId()));
-        edicao.setManga(manga);
-        
-        repository.persist(edicao);
-        return EdicaoResponseDTO.valueOf(edicao);
+
+        try {
+            Formato formato = Formato.valueOf(dto.formatoId());
+            TipoCapa tipoCapa = TipoCapa.fromId(dto.tipoCapaId());
+            Status status = Status.valueOf(dto.statusId());
+
+            Edicao edicao = new Edicao();
+            edicao.setVolume(dto.volume());
+            edicao.setIdioma(dto.idioma());
+            edicao.setLancamento(dto.lancamento());
+            edicao.setDimensao(dto.dimensao());
+            edicao.setTitulo(dto.titulo());
+            edicao.setFormato(formato);
+            edicao.setTipoCapa(tipoCapa);
+            edicao.setStatus(status);
+            edicao.setManga(manga);
+
+            repository.persist(edicao);
+            return EdicaoResponseDTO.valueOf(edicao);
+        } catch (IllegalArgumentException e) {
+            throw new WebApplicationException("IDs inválidos para formato, tipoCapa ou status", 400);
+        }
     }
 
     @Override
@@ -51,15 +60,19 @@ public class EdicaoServiceImpl implements EdicaoService {
     public void update(Long id, EdicaoDTO dto) {
         Edicao edicao = repository.findByIdOptional(id)
             .orElseThrow(() -> new NotFoundException("Edição não encontrada"));
-        
-        edicao.setVolume(dto.volume());
-        edicao.setIdioma(dto.idioma());
-        edicao.setLancamento(dto.lancamento());
-        edicao.setDimensao(dto.dimensao());
-        edicao.setTitulo(dto.titulo());
-        edicao.setFormato(Formato.valueOf(dto.formatoId()));
-        edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
-        edicao.setStatus(Status.valueOf(dto.statusId()));
+
+        try {
+            edicao.setVolume(dto.volume());
+            edicao.setIdioma(dto.idioma());
+            edicao.setLancamento(dto.lancamento());
+            edicao.setDimensao(dto.dimensao());
+            edicao.setTitulo(dto.titulo());
+            edicao.setFormato(Formato.valueOf(dto.formatoId()));
+            edicao.setTipoCapa(TipoCapa.fromId(dto.tipoCapaId()));
+            edicao.setStatus(Status.valueOf(dto.statusId()));
+        } catch (IllegalArgumentException e) {
+            throw new WebApplicationException("IDs inválidos para formato, tipoCapa ou status", 400);
+        }
     }
 
     @Override

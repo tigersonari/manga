@@ -12,7 +12,10 @@ import org.junit.jupiter.api.Test;
 
 import br.manga.dto.PagamentoDTO;
 import br.manga.dto.PagamentoResponseDTO;
+import br.manga.model.Pedido;
+import br.manga.model.Usuario;
 import br.manga.service.PagamentoService;
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
@@ -24,8 +27,27 @@ public class PagamentoResourceTest {
     @Inject
     PagamentoService service;
 
+    private Long createValidPedido() {
+        Usuario usuario = new Usuario();
+        usuario.setNome("Test User");
+        usuario.setEmail("test@user.com");
+        usuario.setSenhaHash("123");
+        usuario.setEndereco("Rua Teste");
+        Panache.getEntityManager().persist(usuario);
+
+        Pedido pedido = new Pedido();
+        pedido.setNumeroPedido(999L);
+        pedido.setData(LocalDate.now());
+        pedido.setStatus("PROCESSANDO");
+        pedido.setValorTotal(100.0);
+        pedido.setUsuario(usuario);
+        Panache.getEntityManager().persist(pedido);
+        return pedido.getId();
+    }
+
     @Test
     @Order(1)
+    @io.quarkus.test.TestTransaction
     void testFindAll() {
         given()
             .when().get("/pagamentos")
@@ -35,8 +57,10 @@ public class PagamentoResourceTest {
 
     @Test
     @Order(2)
+    @io.quarkus.test.TestTransaction
     void testFindById() {
-        PagamentoDTO pagamento = new PagamentoDTO("CARTAO", "APROVADO", LocalDate.now(), 1L);
+        Long pedidoId = createValidPedido();
+        PagamentoDTO pagamento = new PagamentoDTO("CARTAO", "APROVADO", LocalDate.now(), pedidoId);
         Long id = service.create(pagamento).id();
 
         given()
@@ -49,8 +73,10 @@ public class PagamentoResourceTest {
 
     @Test
     @Order(3)
+    @io.quarkus.test.TestTransaction
     void testFindByStatus() {
-        PagamentoDTO pagamento = new PagamentoDTO("BOLETO", "PENDENTE", LocalDate.now(), 2L);
+        Long pedidoId = createValidPedido();
+        PagamentoDTO pagamento = new PagamentoDTO("BOLETO", "PENDENTE", LocalDate.now(), pedidoId);
         service.create(pagamento);
 
         given()
@@ -62,12 +88,14 @@ public class PagamentoResourceTest {
 
     @Test
     @Order(4)
+    @io.quarkus.test.TestTransaction
     void testFindByPedido() {
-        PagamentoDTO pagamento = new PagamentoDTO("PIX", "APROVADO", LocalDate.now(), 3L);
+        Long pedidoId = createValidPedido();
+        PagamentoDTO pagamento = new PagamentoDTO("PIX", "APROVADO", LocalDate.now(), pedidoId);
         service.create(pagamento);
 
         given()
-            .when().get("/pagamentos/pedido/3")
+            .when().get("/pagamentos/pedido/" + pedidoId)
             .then()
                 .statusCode(200)
                 .body("[0].metodoPagamento", is("PIX"));
@@ -75,8 +103,10 @@ public class PagamentoResourceTest {
 
     @Test
     @Order(5)
+    @io.quarkus.test.TestTransaction
     void testCreate() {
-        PagamentoDTO pagamento = new PagamentoDTO("CARTAO", "NOVO", LocalDate.now(), 4L);
+        Long pedidoId = createValidPedido();
+        PagamentoDTO pagamento = new PagamentoDTO("CARTAO", "NOVO", LocalDate.now(), pedidoId);
 
         given()
             .contentType(ContentType.JSON)
@@ -89,15 +119,15 @@ public class PagamentoResourceTest {
                 .body("status", is("NOVO"));
     }
 
-    static Long id = null;
-
     @Test
     @Order(6)
+    @io.quarkus.test.TestTransaction
     void testUpdate() {
-        PagamentoDTO pagamento = new PagamentoDTO("BOLETO", "ORIGINAL", LocalDate.now(), 5L);
-        id = service.create(pagamento).id();
+        Long pedidoId = createValidPedido();
+        PagamentoDTO pagamento = new PagamentoDTO("BOLETO", "ORIGINAL", LocalDate.now(), pedidoId);
+        Long id = service.create(pagamento).id();
 
-        PagamentoDTO updated = new PagamentoDTO("PIX", "ATUALIZADO", LocalDate.now(), 5L);
+        PagamentoDTO updated = new PagamentoDTO("PIX", "ATUALIZADO", LocalDate.now(), pedidoId);
 
         given()
             .contentType(ContentType.JSON)
@@ -113,8 +143,10 @@ public class PagamentoResourceTest {
 
     @Test
     @Order(7)
+    @io.quarkus.test.TestTransaction
     void testDelete() {
-        PagamentoDTO pagamento = new PagamentoDTO("CARTAO", "DELETAR", LocalDate.now(), 6L);
+        Long pedidoId = createValidPedido();
+        PagamentoDTO pagamento = new PagamentoDTO("CARTAO", "DELETAR", LocalDate.now(), pedidoId);
         Long idDeletar = service.create(pagamento).id();
 
         given()

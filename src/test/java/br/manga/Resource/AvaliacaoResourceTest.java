@@ -1,5 +1,7 @@
 package br.manga.resource;
 
+import java.time.LocalDate;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,7 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import br.manga.dto.AvaliacaoDTO;
 import br.manga.dto.AvaliacaoResponseDTO;
+import br.manga.model.Manga;
 import br.manga.service.AvaliacaoService;
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
@@ -21,8 +25,23 @@ public class AvaliacaoResourceTest {
     @Inject
     AvaliacaoService service;
 
+    private Long createValidManga() {
+        Manga manga = new Manga();
+        manga.setTitulo("Test Manga");
+        manga.setIsbn("1234567890123");
+        manga.setLancamento(LocalDate.now());
+        manga.setPreco(29.90);
+        manga.setSinopse("Teste");
+        manga.setEstoque(br.manga.model.Estoque.DISPONIVEL);
+        manga.setGenero(br.manga.model.Genero.SHOUNEN);
+        manga.setClassificacao(br.manga.model.Classificacao.LIVRE);
+        Panache.getEntityManager().persist(manga);
+        return manga.getId();
+    }
+
     @Test
     @Order(1)
+    @io.quarkus.test.TestTransaction
     void testFindAll() {
         given()
             .when().get("/avaliacoes")
@@ -32,8 +51,10 @@ public class AvaliacaoResourceTest {
 
     @Test
     @Order(2)
+    @io.quarkus.test.TestTransaction
     void testFindById() {
-        AvaliacaoDTO avaliacao = new AvaliacaoDTO(8.5, "Ótimo mangá!", 1L);
+        Long mangaId = createValidManga();
+        AvaliacaoDTO avaliacao = new AvaliacaoDTO(8.5, "Ótimo mangá!", mangaId);
         Long id = service.create(avaliacao).id();
 
         given()
@@ -46,12 +67,14 @@ public class AvaliacaoResourceTest {
 
     @Test
     @Order(3)
+    @io.quarkus.test.TestTransaction
     void testFindByManga() {
-        AvaliacaoDTO avaliacao = new AvaliacaoDTO(9.0, "Fantástico!", 2L);
+        Long mangaId = createValidManga();
+        AvaliacaoDTO avaliacao = new AvaliacaoDTO(9.0, "Fantástico!", mangaId);
         service.create(avaliacao);
 
         given()
-            .when().get("/avaliacoes/manga/2")
+            .when().get("/avaliacoes/manga/" + mangaId)
             .then()
                 .statusCode(200)
                 .body("[0].nota", is(9.0f));
@@ -59,8 +82,10 @@ public class AvaliacaoResourceTest {
 
     @Test
     @Order(4)
+    @io.quarkus.test.TestTransaction
     void testFindByNotaGreaterThanEqual() {
-        AvaliacaoDTO avaliacao = new AvaliacaoDTO(7.5, "Bom!", 3L);
+        Long mangaId = createValidManga();
+        AvaliacaoDTO avaliacao = new AvaliacaoDTO(7.5, "Bom!", mangaId);
         service.create(avaliacao);
 
         given()
@@ -72,15 +97,17 @@ public class AvaliacaoResourceTest {
 
     @Test
     @Order(5)
+    @io.quarkus.test.TestTransaction
     void testCalcularMediaNotas() {
-        AvaliacaoDTO avaliacao1 = new AvaliacaoDTO(8.0, "Muito bom!", 4L);
+        Long mangaId = createValidManga();
+        AvaliacaoDTO avaliacao1 = new AvaliacaoDTO(8.0, "Muito bom!", mangaId);
         service.create(avaliacao1);
 
-        AvaliacaoDTO avaliacao2 = new AvaliacaoDTO(9.0, "Excelente!", 4L);
+        AvaliacaoDTO avaliacao2 = new AvaliacaoDTO(9.0, "Excelente!", mangaId);
         service.create(avaliacao2);
 
         given()
-            .when().get("/avaliacoes/media/4")
+            .when().get("/avaliacoes/media/" + mangaId)
             .then()
                 .statusCode(200)
                 .body(is("8.5"));
@@ -88,8 +115,10 @@ public class AvaliacaoResourceTest {
 
     @Test
     @Order(6)
+    @io.quarkus.test.TestTransaction
     void testCreate() {
-        AvaliacaoDTO avaliacao = new AvaliacaoDTO(8.8, "Adorei!", 5L);
+        Long mangaId = createValidManga();
+        AvaliacaoDTO avaliacao = new AvaliacaoDTO(8.8, "Adorei!", mangaId);
 
         given()
             .contentType(ContentType.JSON)
@@ -102,15 +131,15 @@ public class AvaliacaoResourceTest {
                 .body("comentario", is("Adorei!"));
     }
 
-    static Long id = null;
-
     @Test
     @Order(7)
+    @io.quarkus.test.TestTransaction
     void testUpdate() {
-        AvaliacaoDTO avaliacao = new AvaliacaoDTO(7.0, "Regular", 6L);
-        id = service.create(avaliacao).id();
+        Long mangaId = createValidManga();
+        AvaliacaoDTO avaliacao = new AvaliacaoDTO(7.0, "Regular", mangaId);
+        Long id = service.create(avaliacao).id();
 
-        AvaliacaoDTO updated = new AvaliacaoDTO(9.5, "Muito melhor!", 6L);
+        AvaliacaoDTO updated = new AvaliacaoDTO(9.5, "Muito melhor!", mangaId);
 
         given()
             .contentType(ContentType.JSON)
@@ -126,8 +155,10 @@ public class AvaliacaoResourceTest {
 
     @Test
     @Order(8)
+    @io.quarkus.test.TestTransaction
     void testDelete() {
-        AvaliacaoDTO avaliacao = new AvaliacaoDTO(6.5, "Para deletar", 7L);
+        Long mangaId = createValidManga();
+        AvaliacaoDTO avaliacao = new AvaliacaoDTO(6.5, "Para deletar", mangaId);
         Long idDeletar = service.create(avaliacao).id();
 
         given()

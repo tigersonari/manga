@@ -1,5 +1,7 @@
 package br.manga.resource;
 
+import java.time.LocalDate;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,20 +11,42 @@ import org.junit.jupiter.api.Test;
 
 import br.manga.dto.EntregaDTO;
 import br.manga.dto.EntregaResponseDTO;
+import br.manga.model.Pedido;
+import br.manga.model.Usuario;
 import br.manga.service.EntregaService;
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 
 @QuarkusTest
-public class EntregaResourceTest {
+public class EntregaResourceTest  {
 
     @Inject
     EntregaService service;
 
+    private Long createValidPedido() {
+        Usuario usuario = new Usuario();
+        usuario.setNome("Test User");
+        usuario.setEmail("test@user.com");
+        usuario.setSenhaHash("123");
+        usuario.setEndereco("Rua Teste");
+        Panache.getEntityManager().persist(usuario);
+
+        Pedido pedido = new Pedido();
+        pedido.setNumeroPedido(999L);
+        pedido.setData(LocalDate.now());
+        pedido.setStatus("PROCESSANDO");
+        pedido.setValorTotal(100.0);
+        pedido.setUsuario(usuario);
+        Panache.getEntityManager().persist(pedido);
+        return pedido.getId();
+    }
+
     @Test
     @Order(1)
+    @io.quarkus.test.TestTransaction
     void testFindAll() {
         given()
             .when().get("/entregas")
@@ -32,8 +56,10 @@ public class EntregaResourceTest {
 
     @Test
     @Order(2)
+    @io.quarkus.test.TestTransaction
     void testFindById() {
-        EntregaDTO entrega = new EntregaDTO("Rua Teste 123", "ABC123", "PENDENTE", 1L);
+        Long pedidoId = createValidPedido();
+        EntregaDTO entrega = new EntregaDTO("Rua Teste 123", "ABC123", "PENDENTE", pedidoId);
         Long id = service.create(entrega).id();
 
         given()
@@ -46,8 +72,10 @@ public class EntregaResourceTest {
 
     @Test
     @Order(3)
+    @io.quarkus.test.TestTransaction
     void testFindByStatus() {
-        EntregaDTO entrega = new EntregaDTO("Rua Teste 124", "ABC124", "EM_TRANSITO", 2L);
+        Long pedidoId = createValidPedido();
+        EntregaDTO entrega = new EntregaDTO("Rua Teste 124", "ABC124", "EM_TRANSITO", pedidoId);
         service.create(entrega);
 
         given()
@@ -59,8 +87,10 @@ public class EntregaResourceTest {
 
     @Test
     @Order(4)
+    @io.quarkus.test.TestTransaction
     void testFindByCodigoRastreio() {
-        EntregaDTO entrega = new EntregaDTO("Rua Teste 125", "ABC125", "PENDENTE", 3L);
+        Long pedidoId = createValidPedido();
+        EntregaDTO entrega = new EntregaDTO("Rua Teste 125", "ABC125", "PENDENTE", pedidoId);
         service.create(entrega);
 
         given()
@@ -72,12 +102,14 @@ public class EntregaResourceTest {
 
     @Test
     @Order(5)
+    @io.quarkus.test.TestTransaction
     void testFindByPedido() {
-        EntregaDTO entrega = new EntregaDTO("Rua Teste 126", "ABC126", "ENTREGUE", 4L);
+        Long pedidoId = createValidPedido();
+        EntregaDTO entrega = new EntregaDTO("Rua Teste 126", "ABC126", "ENTREGUE", pedidoId);
         service.create(entrega);
 
         given()
-            .when().get("/entregas/pedido/4")
+            .when().get("/entregas/pedido/" + pedidoId)
             .then()
                 .statusCode(200)
                 .body("[0].codigoRastreio", is("ABC126"));
@@ -85,8 +117,10 @@ public class EntregaResourceTest {
 
     @Test
     @Order(6)
+    @io.quarkus.test.TestTransaction
     void testCreate() {
-        EntregaDTO entrega = new EntregaDTO("Rua Nova 127", "ABC127", "NOVO", 5L);
+        Long pedidoId = createValidPedido();
+        EntregaDTO entrega = new EntregaDTO("Rua Nova 127", "ABC127", "NOVO", pedidoId);
 
         given()
             .contentType(ContentType.JSON)
@@ -99,15 +133,15 @@ public class EntregaResourceTest {
                 .body("status", is("NOVO"));
     }
 
-    static Long id = null;
-
     @Test
     @Order(7)
+    @io.quarkus.test.TestTransaction
     void testUpdate() {
-        EntregaDTO entrega = new EntregaDTO("Rua Original 128", "ABC128", "ORIGINAL", 6L);
-        id = service.create(entrega).id();
+        Long pedidoId = createValidPedido();
+        EntregaDTO entrega = new EntregaDTO("Rua Original 128", "ABC128", "ORIGINAL", pedidoId);
+        Long id = service.create(entrega).id();
 
-        EntregaDTO updated = new EntregaDTO("Rua Atualizada 128", "ABC128", "ATUALIZADO", 6L);
+        EntregaDTO updated = new EntregaDTO("Rua Atualizada 128", "ABC128", "ATUALIZADO", pedidoId);
 
         given()
             .contentType(ContentType.JSON)
@@ -123,8 +157,10 @@ public class EntregaResourceTest {
 
     @Test
     @Order(8)
+    @io.quarkus.test.TestTransaction
     void testDelete() {
-        EntregaDTO entrega = new EntregaDTO("Rua Deletar 129", "ABC129", "DELETAR", 7L);
+        Long pedidoId = createValidPedido();
+        EntregaDTO entrega = new EntregaDTO("Rua Deletar 129", "ABC129", "DELETAR", pedidoId);
         Long idDeletar = service.create(entrega).id();
 
         given()

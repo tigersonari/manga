@@ -1,7 +1,7 @@
 package br.manga.resource;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,22 +9,60 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import br.manga.dto.ItemPedidoDTO;
 import br.manga.dto.PedidoDTO;
 import br.manga.dto.PedidoResponseDTO;
+import br.manga.model.Manga;
+import br.manga.model.Usuario;
 import br.manga.service.PedidoService;
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 
 @QuarkusTest
-public class PedidoResourceTest {
+public class PedidoResourceTest{
 
     @Inject
     PedidoService service;
 
+    private Long[] createValidEntities() {
+        Usuario usuario = new Usuario();
+        usuario.setNome("Test User");
+        usuario.setEmail("test@user.com");
+        usuario.setSenhaHash("123");
+        usuario.setEndereco("Rua Teste");
+        Panache.getEntityManager().persist(usuario);
+
+        Manga manga = new Manga();
+        manga.setTitulo("Test Manga");
+        manga.setIsbn("1234567890123");
+        manga.setLancamento(LocalDate.now());
+        manga.setPreco(29.90);
+        manga.setSinopse("Teste");
+        manga.setEstoque(br.manga.model.Estoque.DISPONIVEL);
+        manga.setGenero(br.manga.model.Genero.SHOUNEN);
+        manga.setClassificacao(br.manga.model.Classificacao.LIVRE);
+        Panache.getEntityManager().persist(manga);
+
+        return new Long[]{usuario.getId(), manga.getId()};
+    }
+
+    private PedidoDTO createValidPedidoDTO(Long usuarioId, Long mangaId) {
+        return new PedidoDTO(
+            999L,
+            LocalDate.now(),
+            "PROCESSANDO",
+            100.0,
+            usuarioId,
+            List.of(new ItemPedidoDTO(mangaId, 1))
+        );
+    }
+
     @Test
     @Order(1)
+    @io.quarkus.test.TestTransaction
     void testFindAll() {
         given()
             .when().get("/pedidos")
@@ -34,35 +72,52 @@ public class PedidoResourceTest {
 
     @Test
     @Order(2)
+    @io.quarkus.test.TestTransaction
     void testFindById() {
-        PedidoDTO pedido = new PedidoDTO(123L, LocalDate.now(), "PENDENTE", 100.0, 1L, Collections.emptyList());
-        Long id = service.create(pedido).numeroPedido();
+        Long[] ids = createValidEntities();
+        Long usuarioId = ids[0];
+        Long mangaId = ids[1];
+        PedidoDTO pedido = createValidPedidoDTO(usuarioId, mangaId);
+        Long id = service.create(pedido).id();
 
         given()
             .when().get("/pedidos/" + id)
             .then()
                 .statusCode(200)
-                .body("numeroPedido", is(123))
-                .body("status", is("PENDENTE"));
+                .body("numeroPedido", is(999))
+                .body("status", is("PROCESSANDO"));
     }
 
     @Test
     @Order(3)
+    @io.quarkus.test.TestTransaction
     void testFindByUsuario() {
-        PedidoDTO pedido = new PedidoDTO(124L, LocalDate.now(), "PENDENTE", 150.0, 1L, Collections.emptyList());
+        Long[] ids = createValidEntities();
+        Long usuarioId = ids[0];
+        Long mangaId = ids[1];
+        PedidoDTO pedido = createValidPedidoDTO(usuarioId, mangaId);
         service.create(pedido);
 
         given()
-            .when().get("/pedidos/usuario/1")
+            .when().get("/pedidos/usuario/" + usuarioId)
             .then()
                 .statusCode(200)
-                .body("[0].numeroPedido", is(124));
+                .body("[0].numeroPedido", is(999));
     }
 
     @Test
     @Order(4)
+    @io.quarkus.test.TestTransaction
     void testFindByStatus() {
-        PedidoDTO pedido = new PedidoDTO(125L, LocalDate.now(), "ENVIADO", 200.0, 2L, Collections.emptyList());
+        Long[] ids = createValidEntities();
+        Long usuarioId = ids[0];
+        Long mangaId = ids[1];
+        PedidoDTO pedido = new PedidoDTO(125L, 
+        LocalDate.now(),
+         "ENVIADO",
+          200.0, 
+          usuarioId, 
+          List.of(new ItemPedidoDTO(mangaId, 1)));
         service.create(pedido);
 
         given()
@@ -74,21 +129,29 @@ public class PedidoResourceTest {
 
     @Test
     @Order(5)
+    @io.quarkus.test.TestTransaction
     void testFindByNumeroPedido() {
-        PedidoDTO pedido = new PedidoDTO(126L, LocalDate.now(), "PENDENTE", 250.0, 3L, Collections.emptyList());
+        Long[] ids = createValidEntities();
+        Long usuarioId = ids[0];
+        Long mangaId = ids[1];
+        PedidoDTO pedido = createValidPedidoDTO(usuarioId, mangaId);
         service.create(pedido);
 
         given()
-            .when().get("/pedidos/numero/126")
+            .when().get("/pedidos/numero/999")
             .then()
                 .statusCode(200)
-                .body("numeroPedido", is(126));
+                .body("numeroPedido", is(999));
     }
 
     @Test
     @Order(6)
+    @io.quarkus.test.TestTransaction
     void testCreate() {
-        PedidoDTO pedido = new PedidoDTO(127L, LocalDate.now(), "NOVO", 300.0, 4L, Collections.emptyList());
+        Long[] ids = createValidEntities();
+        Long usuarioId = ids[0];
+        Long mangaId = ids[1];
+        PedidoDTO pedido = createValidPedidoDTO(usuarioId, mangaId);
 
         given()
             .contentType(ContentType.JSON)
@@ -96,20 +159,28 @@ public class PedidoResourceTest {
             .when().post("/pedidos")
             .then()
                 .statusCode(201)
-                .body("numeroPedido", is(127))
-                .body("status", is("NOVO"))
-                .body("valorTotal", is(300.0f));
+                .body("numeroPedido", is(999))
+                .body("status", is("PROCESSANDO"))
+                .body("valorTotal", is(100.0f));
     }
-
-    static Long id = null;
 
     @Test
     @Order(7)
+    @io.quarkus.test.TestTransaction
     void testUpdate() {
-        PedidoDTO pedido = new PedidoDTO(128L, LocalDate.now(), "ORIGINAL", 400.0, 5L, Collections.emptyList());
-        id = service.create(pedido).numeroPedido();
+        Long[] ids = createValidEntities();
+        Long usuarioId = ids[0];
+        Long mangaId = ids[1];
+        PedidoDTO pedido = createValidPedidoDTO(usuarioId, mangaId);
+        Long id = service.create(pedido).id(); // Ajustado para usar id
 
-        PedidoDTO updated = new PedidoDTO(128L, LocalDate.now(), "ATUALIZADO", 450.0, 5L, Collections.emptyList());
+        PedidoDTO updated = new PedidoDTO
+        (999L, 
+        LocalDate.now(), 
+        "ATUALIZADO", 
+        450.0, 
+        usuarioId, 
+        List.of(new ItemPedidoDTO(mangaId, 1)));
 
         given()
             .contentType(ContentType.JSON)
@@ -125,9 +196,13 @@ public class PedidoResourceTest {
 
     @Test
     @Order(8)
+    @io.quarkus.test.TestTransaction
     void testDelete() {
-        PedidoDTO pedido = new PedidoDTO(129L, LocalDate.now(), "DELETAR", 500.0, 6L, Collections.emptyList());
-        Long idDeletar = service.create(pedido).numeroPedido();
+        Long[] ids = createValidEntities();
+        Long usuarioId = ids[0];
+        Long mangaId = ids[1];
+        PedidoDTO pedido = createValidPedidoDTO(usuarioId, mangaId);
+        Long idDeletar = service.create(pedido).id(); 
 
         given()
             .when().delete("/pedidos/" + idDeletar)

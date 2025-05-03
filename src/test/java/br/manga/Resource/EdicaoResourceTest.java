@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import br.manga.dto.EdicaoDTO;
 import br.manga.dto.EdicaoResponseDTO;
+import br.manga.model.Manga;
 import br.manga.service.EdicaoService;
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
@@ -23,8 +25,23 @@ public class EdicaoResourceTest {
     @Inject
     EdicaoService service;
 
+    private Long createValidManga() {
+        Manga manga = new Manga();
+        manga.setTitulo("Test Manga");
+        manga.setIsbn("1234567890123");
+        manga.setLancamento(LocalDate.now());
+        manga.setPreco(29.90);
+        manga.setSinopse("Teste");
+        manga.setEstoque(br.manga.model.Estoque.DISPONIVEL);
+        manga.setGenero(br.manga.model.Genero.SHOUNEN);
+        manga.setClassificacao(br.manga.model.Classificacao.LIVRE);
+        Panache.getEntityManager().persist(manga);
+        return manga.getId();
+    }
+
     @Test
     @Order(1)
+    @io.quarkus.test.TestTransaction
     void testFindAll() {
         given()
             .when().get("/edicoes")
@@ -34,8 +51,10 @@ public class EdicaoResourceTest {
 
     @Test
     @Order(2)
+    @io.quarkus.test.TestTransaction
     void testFindById() {
-        EdicaoDTO edicao = new EdicaoDTO(1, "Português", LocalDate.now(), "15x21", "Edição Teste", 1, 1, 1, 1L);
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(1, "Português", LocalDate.now(), "15x21", "Edição Teste", 1, 1, 1, mangaId);
         Long id = service.create(edicao).id();
 
         given()
@@ -48,12 +67,14 @@ public class EdicaoResourceTest {
 
     @Test
     @Order(3)
+    @io.quarkus.test.TestTransaction
     void testFindByManga() {
-        EdicaoDTO edicao = new EdicaoDTO(2, "Inglês", LocalDate.now(), "15x21", "Edição Manga", 1, 1, 1, 2L);
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(2, "Inglês", LocalDate.now(), "15x21", "Edição Manga", 1, 1, 1, mangaId);
         service.create(edicao);
 
         given()
-            .when().get("/edicoes/manga/2")
+            .when().get("/edicoes/manga/" + mangaId)
             .then()
                 .statusCode(200)
                 .body("[0].titulo", is("Edição Manga"));
@@ -61,12 +82,14 @@ public class EdicaoResourceTest {
 
     @Test
     @Order(4)
+    @io.quarkus.test.TestTransaction
     void testFindByFormato() {
-        EdicaoDTO edicao = new EdicaoDTO(3, "Português", LocalDate.now(), "15x21", "Edição Formato", 2, 1, 1, 3L);
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(3, "Português", LocalDate.now(), "15x21", "Edição Formato", 1, 1, 1, mangaId);
         service.create(edicao);
 
         given()
-            .when().get("/edicoes/formato/2")
+            .when().get("/edicoes/formato/1")
             .then()
                 .statusCode(200)
                 .body("[0].titulo", is("Edição Formato"));
@@ -74,12 +97,14 @@ public class EdicaoResourceTest {
 
     @Test
     @Order(5)
+    @io.quarkus.test.TestTransaction
     void testFindByStatus() {
-        EdicaoDTO edicao = new EdicaoDTO(4, "Japonês", LocalDate.now(), "15x21", "Edição Status", 1, 1, 2, 4L);
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(4, "Japonês", LocalDate.now(), "15x21", "Edição Status", 1, 1, 1, mangaId);
         service.create(edicao);
 
         given()
-            .when().get("/edicoes/status/2")
+            .when().get("/edicoes/status/1")
             .then()
                 .statusCode(200)
                 .body("[0].titulo", is("Edição Status"));
@@ -87,12 +112,14 @@ public class EdicaoResourceTest {
 
     @Test
     @Order(6)
+    @io.quarkus.test.TestTransaction
     void testFindByVolumeAndManga() {
-        EdicaoDTO edicao = new EdicaoDTO(5, "Português", LocalDate.now(), "15x21", "Edição Volume", 1, 1, 1, 5L);
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(5, "Português", LocalDate.now(), "15x21", "Edição Volume", 1, 1, 1, mangaId);
         service.create(edicao);
 
         given()
-            .when().get("/edicoes/volume/5/manga/5")
+            .when().get("/edicoes/volume/5/manga/" + mangaId)
             .then()
                 .statusCode(200)
                 .body("titulo", is("Edição Volume"));
@@ -100,8 +127,10 @@ public class EdicaoResourceTest {
 
     @Test
     @Order(7)
+    @io.quarkus.test.TestTransaction
     void testCreate() {
-        EdicaoDTO edicao = new EdicaoDTO(6, "Inglês", LocalDate.now(), "15x21", "Edição Nova", 1, 1, 1, 6L);
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(6, "Inglês", LocalDate.now(), "15x21", "Edição Nova", 1, 1, 1, mangaId);
 
         given()
             .contentType(ContentType.JSON)
@@ -114,15 +143,15 @@ public class EdicaoResourceTest {
                 .body("volume", is(6));
     }
 
-    static Long id = null;
-
     @Test
     @Order(8)
+    @io.quarkus.test.TestTransaction
     void testUpdate() {
-        EdicaoDTO edicao = new EdicaoDTO(7, "Português", LocalDate.now(), "15x21", "Edição Original", 1, 1, 1, 7L);
-        id = service.create(edicao).id();
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(7, "Português", LocalDate.now(), "15x21", "Edição Original", 1, 1, 1, mangaId);
+        Long id = service.create(edicao).id();
 
-        EdicaoDTO updated = new EdicaoDTO(7, "Inglês", LocalDate.now(), "15x21", "Edição Atualizada", 1, 1, 1, 7L);
+        EdicaoDTO updated = new EdicaoDTO(7, "Inglês", LocalDate.now(), "15x21", "Edição Atualizada", 1, 1, 1, mangaId);
 
         given()
             .contentType(ContentType.JSON)
@@ -138,8 +167,10 @@ public class EdicaoResourceTest {
 
     @Test
     @Order(9)
+    @io.quarkus.test.TestTransaction
     void testDelete() {
-        EdicaoDTO edicao = new EdicaoDTO(8, "Japonês", LocalDate.now(), "15x21", "Edição Deletar", 1, 1, 1, 8L);
+        Long mangaId = createValidManga();
+        EdicaoDTO edicao = new EdicaoDTO(8, "Japonês", LocalDate.now(), "15x21", "Edição Deletar", 1, 1, 1, mangaId);
         Long idDeletar = service.create(edicao).id();
 
         given()

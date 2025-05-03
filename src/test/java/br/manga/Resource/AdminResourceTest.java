@@ -16,15 +16,16 @@ import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 
 @QuarkusTest
-public class AdminResourceTest {
+public class AdminResourceTest  {
 
     @Inject
     AdminService service;
 
     @Test
     @Order(1)
+    @io.quarkus.test.TestTransaction
     void testFindById() {
-        AdminDTO admin = new AdminDTO("Admin Teste", "admin@teste.com", "12345678901", "Rua Teste 123", "TOTAL");
+        AdminDTO admin = new AdminDTO("Admin Teste", "admin1@teste.com", "12345678901", "Rua Teste 123", "TOTAL");
         Long id = service.create(admin).id();
 
         given()
@@ -37,8 +38,9 @@ public class AdminResourceTest {
 
     @Test
     @Order(2)
+    @io.quarkus.test.TestTransaction
     void testFindByPermissao() {
-        AdminDTO admin = new AdminDTO("Admin Permissao", "permissao@teste.com", "12345678901", "Rua Permissao 124", "PARCIAL");
+        AdminDTO admin = new AdminDTO("Admin Permissao", "permissao1@teste.com", "12345678901", "Rua Permissao 124", "PARCIAL");
         service.create(admin);
 
         given()
@@ -50,8 +52,9 @@ public class AdminResourceTest {
 
     @Test
     @Order(3)
+    @io.quarkus.test.TestTransaction
     void testCreate() {
-        AdminDTO admin = new AdminDTO("Admin Novo", "novo@teste.com", "12345678901", "Rua Nova 125", "TOTAL");
+        AdminDTO admin = new AdminDTO("Admin Novo", "novo1@teste.com", "12345678901", "Rua Nova 125", "TOTAL");
 
         given()
             .contentType(ContentType.JSON)
@@ -68,11 +71,12 @@ public class AdminResourceTest {
 
     @Test
     @Order(4)
+    @io.quarkus.test.TestTransaction
     void testUpdate() {
-        AdminDTO admin = new AdminDTO("Admin Original", "original@teste.com", "12345678901", "Rua Original 126", "ORIGINAL");
+        AdminDTO admin = new AdminDTO("Admin Original", "original1@teste.com", "12345678901", "Rua Original 126", "ORIGINAL");
         id = service.create(admin).id();
 
-        AdminDTO updated = new AdminDTO("Admin Atualizado", "atualizado@teste.com", "12345678901", "Rua Atualizada 126", "ATUALIZADO");
+        AdminDTO updated = new AdminDTO("Admin Atualizado", "atualizado1@teste.com", "12345678901", "Rua Atualizada 126", "ATUALIZADO");
 
         given()
             .contentType(ContentType.JSON)
@@ -88,8 +92,9 @@ public class AdminResourceTest {
 
     @Test
     @Order(5)
+    @io.quarkus.test.TestTransaction
     void testDelete() {
-        AdminDTO admin = new AdminDTO("Admin Deletar", "deletar@teste.com", "12345678901", "Rua Deletar 127", "DELETAR");
+        AdminDTO admin = new AdminDTO("Admin Deletar", "deletar1@teste.com", "12345678901", "Rua Deletar 127", "DELETAR");
         Long idDeletar = service.create(admin).id();
 
         given()
@@ -101,7 +106,7 @@ public class AdminResourceTest {
             AdminResponseDTO response = service.findById(idDeletar);
             assertNull(response);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Admin não encontrado"));
+            assertThat(e.getMessage(), is("Admin não encontrado com id: " + idDeletar));
         }
     }
 }

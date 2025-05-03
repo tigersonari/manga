@@ -23,6 +23,7 @@ public class UsuarioResourceTest {
 
     @Test
     @Order(1)
+    @io.quarkus.test.TestTransaction
     void testFindAll() {
         given()
             .when().get("/usuarios")
@@ -32,6 +33,7 @@ public class UsuarioResourceTest {
 
     @Test
     @Order(2)
+    @io.quarkus.test.TestTransaction
     void testFindById() {
         UsuarioDTO usuario = new UsuarioDTO("Usuario Teste", "teste@email.com", "12345678901", "Rua Teste 123");
         Long id = service.create(usuario).id();
@@ -46,6 +48,7 @@ public class UsuarioResourceTest {
 
     @Test
     @Order(3)
+    @io.quarkus.test.TestTransaction
     void testFindByEmail() {
         UsuarioDTO usuario = new UsuarioDTO("Usuario Email", "email@teste.com", "12345678901", "Rua Email 124");
         service.create(usuario);
@@ -59,6 +62,7 @@ public class UsuarioResourceTest {
 
     @Test
     @Order(4)
+    @io.quarkus.test.TestTransaction
     void testFindByNome() {
         UsuarioDTO usuario = new UsuarioDTO("Usuario Nome", "nome@teste.com", "12345678901", "Rua Nome 125");
         service.create(usuario);
@@ -72,6 +76,7 @@ public class UsuarioResourceTest {
 
     @Test
     @Order(5)
+    @io.quarkus.test.TestTransaction
     void testCreate() {
         UsuarioDTO usuario = new UsuarioDTO("Usuario Novo", "novo@teste.com", "12345678901", "Rua Nova 126");
 
@@ -90,6 +95,7 @@ public class UsuarioResourceTest {
 
     @Test
     @Order(6)
+    @io.quarkus.test.TestTransaction
     void testUpdate() {
         UsuarioDTO usuario = new UsuarioDTO("Usuario Original", "original@teste.com", "12345678901", "Rua Original 127");
         id = service.create(usuario).id();
@@ -110,6 +116,7 @@ public class UsuarioResourceTest {
 
     @Test
     @Order(7)
+    @io.quarkus.test.TestTransaction
     void testDelete() {
         UsuarioDTO usuario = new UsuarioDTO("Usuario Deletar", "deletar@teste.com", "12345678901", "Rua Deletar 128");
         Long idDeletar = service.create(usuario).id();
@@ -123,7 +130,7 @@ public class UsuarioResourceTest {
             UsuarioResponseDTO response = service.findById(idDeletar);
             assertNull(response);
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Usuário não encontrado"));
+            assertThat(e.getMessage(), is("Usuário não encontrado com id: " + idDeletar));
         }
     }
 }

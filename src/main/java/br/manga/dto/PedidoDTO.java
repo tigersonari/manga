@@ -27,4 +27,8 @@ public record PedidoDTO(
     Long usuarioId,
     
     List<ItemPedidoDTO> itens
-) {}
+) {
+    
+}
+
+
