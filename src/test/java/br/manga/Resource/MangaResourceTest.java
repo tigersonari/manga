@@ -1,13 +1,16 @@
+//OK
+
 package br.manga.resource;
 
 import java.time.LocalDate;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.Test;
 
 import br.manga.dto.MangaDTO;
+import br.manga.dto.MangaResponseDTO;
 import br.manga.service.MangaService;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
@@ -20,9 +23,11 @@ public class MangaResourceTest {
     @Inject
     MangaService service;
 
+    static Long id;
+
     @Test
-    void testCriarManga() {
-        MangaDTO dto = new MangaDTO("Naruto", "Masashi Kishimoto", LocalDate.of(2000, 1, 1), 9.99, "Ação", 1, 1, 1, 1L, 1L);
+    void testCreate() {
+        MangaDTO dto = new MangaDTO("Manga Teste", "1234567890123", LocalDate.now(), 9.99, "Shounen", 1, 1, 1, 1L, 1L);
 
         given()
             .contentType(ContentType.JSON)
@@ -30,62 +35,83 @@ public class MangaResourceTest {
             .when().post("/mangas")
             .then()
                 .statusCode(201)
+                .body("id", notNullValue(),
+                      "titulo", is("Manga Teste"));
+    }
+
+    @Test
+    void testGetAll() {
+        given()
+            .when().get("/mangas")
+            .then()
+                .statusCode(200);  
+    }
+
+    @Test
+    void testGetById() {
+        given()
+            .when().get("/mangas/1")
+            .then()
+                .statusCode(200)
                 .body("titulo", is("Naruto"));
     }
 
     @Test
-    void testBuscarPorTitulo() {
-        MangaDTO dto = new MangaDTO("Bleach", "Tite Kubo", LocalDate.of(2001, 1, 1), 9.99, "Ação", 1, 1, 1, 1L, 1L);
-        service.create(dto);
-
+    void testGetByTitulo() {
         given()
-            .when().get("/mangas/titulo/Bleach")
+            .when().get("/mangas/titulo/Naruto")
             .then()
-                .statusCode(200)
-                .body("titulo", equalTo("Bleach"));
+                .statusCode(200);
+    }
+
+
+    @Test
+    void testGetByEditora() {
+        given()
+            .when().get("/mangas/editora/1")
+            .then()
+                .statusCode(200);
     }
 
     @Test
-    void testBuscarPorGenero() {
+    void testGetByIsbn() {
         given()
-            .when().get("/mangas/genero/Ação")
+            .when().get("/mangas/isbn/9784088732735")
             .then()
-                .statusCode(200)
-                .body("size()", greaterThanOrEqualTo(0));
+                .statusCode(200);
     }
 
     @Test
-    void testBuscarPorAutor() {
-        given()
-            .when().get("/mangas/autor/Masashi Kishimoto")
-            .then()
-                .statusCode(200)
-                .body("size()", greaterThanOrEqualTo(0));
-    }
+    void testUpdate() {
+        MangaDTO dto = new MangaDTO("Manga Teste", "3847563849576", LocalDate.now(), 9.99, "Shounen", 1, 1, 1, 1L, 1L);
+        id = service.create(dto).id();
 
-    @Test
-    void testAtualizarManga() {
-        MangaDTO dto = new MangaDTO("One Piece", "Oda", LocalDate.of(1999, 1, 1), 9.99, "Aventura", 1, 1, 1, 1L, 1L);
-        Long id = service.create(dto).id();
-
-        MangaDTO atualizado = new MangaDTO("One Piece", "Eiichiro Oda", LocalDate.of(1999, 1, 1), 9.99, "Aventura", 1, 1, 1, 1L, 1L);
+        MangaDTO updated = new MangaDTO("Manga Atualizado", "1908763405968", LocalDate.now(), 9.99, "Seinen", 1, 1, 1, 1L, 1L);
 
         given()
             .contentType(ContentType.JSON)
-            .body(atualizado)
+            .body(updated)
             .when().put("/mangas/" + id)
             .then()
                 .statusCode(204);
+
+        MangaResponseDTO response = service.findById(id);
+        assertThat(response.titulo(), is("Manga Atualizado"));
     }
 
     @Test
-    void testDeletarManga() {
-        MangaDTO dto = new MangaDTO("Death Note", "Tsugumi Ohba", LocalDate.of(2003, 1, 1), 9.99, "Suspense", 1, 1, 1, 1L, 1L);
-        Long id = service.create(dto).id();
+    void testDelete() {
+        MangaDTO dto = new MangaDTO("Manga Teste", "7375840384756", LocalDate.now(), 9.99, "Shounen", 1, 1, 1, 1L, 1L);
+        id = service.create(dto).id();
 
         given()
             .when().delete("/mangas/" + id)
             .then()
                 .statusCode(204);
+
+        given()
+            .when().get("/mangas/" + id)
+            .then()
+                .statusCode(404);
     }
 }

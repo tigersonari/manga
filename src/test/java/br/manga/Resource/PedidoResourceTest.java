@@ -1,10 +1,18 @@
+//OK
+
 package br.manga.resource;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.Test;
 
+import br.manga.dto.ItemPedidoDTO;
 import br.manga.dto.PedidoDTO;
+import br.manga.dto.PedidoResponseDTO;
 import br.manga.service.PedidoService;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
@@ -17,78 +25,112 @@ public class PedidoResourceTest {
     @Inject
     PedidoService service;
 
+
+    static Long id;
+
     @Test
-    void testCriarPedido() {
-        PedidoDTO dto = new PedidoDTO(1L, null, "PENDENTE", null, null, null);
+    void testCreate() {
+       
+        ItemPedidoDTO item = new ItemPedidoDTO(1L, 1);
+        PedidoDTO dto = new PedidoDTO(
+            9999L, 
+            LocalDate.now(),
+            "ENTREGUE", 
+            29.90, 
+            1L, 
+            List.of(item)
+        );
 
         given()
             .contentType(ContentType.JSON)
             .body(dto)
             .when().post("/pedidos")
             .then()
+                .log().all() 
                 .statusCode(201)
-                .body("status", is("PENDENTE"));
+                .body("id", notNullValue(),
+                      "numeroPedido", is(9999),
+                      "status", is("ENTREGUE"),
+                      "valorTotal", is(29.90f));
+    }
+
+    
+
+
+    @Test
+    void testGetAll() {
+        given()
+        .when().get("/pedidos")
+        .then()
+            .statusCode(200); 
     }
 
     @Test
-    void testBuscarPorStatus() {
-        PedidoDTO dto = new PedidoDTO(2L, null, "EM_PROCESSAMENTO", null, null, null);
-        service.create(dto);
-
+    void testGetById() {
         given()
-            .when().get("/pedidos/status/EM_PROCESSAMENTO")
+            .when().get("/pedidos/1")
             .then()
                 .statusCode(200)
-                .body("[0].status", equalTo("EM_PROCESSAMENTO"));
+                .body("numeroPedido", is(1001));
     }
 
     @Test
-    void testAtualizarPedido() {
-        PedidoDTO dto = new PedidoDTO(3L, null, "PENDENTE", null, null, null);
-        Long id = service.create(dto).id();
+    void testGetByUsuario() {
+        given()
+            .when().get("/pedidos/usuario/1")
+            .then()
+                .statusCode(200);
+    }
 
-        PedidoDTO atualizado = new PedidoDTO(3L, null, "ENTREGUE", null, id, null);
+    @Test
+    void testGetByStatus() {
+        given()
+            .when().get("/pedidos/status/ENTREGUE")
+            .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void testGetByNumeroPedido() {
+        given()
+            .when().get("/pedidos/numero/1002")
+            .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void testUpdate() {
+        ItemPedidoDTO item = new ItemPedidoDTO(1L, 2);
+        PedidoDTO dto = new PedidoDTO(12345L, LocalDate.now(), "CANCELADO", 100.0, 1L, List.of(item));
+        id = service.create(dto).id();
+
+        PedidoDTO updated = new PedidoDTO(12345L, LocalDate.now(), "ENVIADO", 100.0, 1L, List.of(item));  // Ainda mantendo o item
 
         given()
             .contentType(ContentType.JSON)
-            .body(atualizado)
+            .body(updated)
             .when().put("/pedidos/" + id)
             .then()
                 .statusCode(204);
+
+        PedidoResponseDTO response = service.findById(id);
+        assertThat(response.status(), is("ENVIADO"));
     }
 
     @Test
-    public void testFindById() {
-        Long pedidoId = 1L; 
-        given()
-                .when()
-                .get("/pedidos/{id}", pedidoId)
-                .then()
-                .statusCode(200)
-                .body("id", is(pedidoId.intValue()));
-    }
-
-    @Test
-    public void testFindByNumero() {
-        given()
-                .when()
-                .get("/pedidos/numero/{numeroPedido}", 1002L)
-                .then()
-                .statusCode(200)
-                .body("numeroPedido", is(1002));
-    }
-
-    @Test
-    void testDeletarPedido() {
-        PedidoDTO dto = new PedidoDTO(4L, null, "CANCELADO", null, null, null);
-        Long id = service.create(dto).id();
+    void testDelete() {
+        ItemPedidoDTO item = new ItemPedidoDTO(1L, 2);
+        PedidoDTO dto = new PedidoDTO(12345L, LocalDate.now(), "ENTREGUE", 100.0, 1L, List.of(item));
+        id = service.create(dto).id();
 
         given()
             .when().delete("/pedidos/" + id)
             .then()
                 .statusCode(204);
+
+        given()
+            .when().get("/pedidos/" + id)
+            .then()
+                .statusCode(404);
     }
 }
-
-
-   

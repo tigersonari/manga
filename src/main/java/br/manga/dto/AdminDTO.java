@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record AdminDTO(
+
     @NotBlank(message = "nome é obrigatório")
     @Size(max = 100, message = "nome deve ser inferior a 100 caracteres")
     String nome,

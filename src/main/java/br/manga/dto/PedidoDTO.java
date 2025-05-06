@@ -3,11 +3,14 @@ package br.manga.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record PedidoDTO(
     @NotNull(message = "número do pedido não pode ser vazio")
     @Positive(message = "insira um número de pedido válido")

@@ -36,15 +36,16 @@ public class EdicaoResource {
         return Response.ok(service.findByManga(mangaId)).build();
     }
 
-    @GET @Path("/formato/{formatoId}")
+    /*@GET @Path("/formato/{formatoId}")
     public Response findByFormato(@PathParam("formatoId") Integer formatoId) {
         return Response.ok(service.findByFormato(formatoId)).build();
     }
 
+
     @GET @Path("/status/{statusId}")
     public Response findByStatus(@PathParam("statusId") Integer statusId) {
         return Response.ok(service.findByStatus(statusId)).build();
-    }
+    }*/
 
     @GET @Path("/volume/{volume}/manga/{mangaId}")
     public Response findByVolumeAndManga(

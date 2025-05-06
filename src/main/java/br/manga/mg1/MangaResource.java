@@ -40,11 +40,11 @@ public class MangaResource {
         return Response.ok(service.findByTitulo(titulo)).build();
     }
 
-    @GET
+   /* @GET
     @Path("/genero/{generoId}")
     public Response findByGenero(@PathParam("generoId") Integer generoId) {
         return Response.ok(service.findByGenero(generoId)).build();
-    }
+    }*/
 
     @GET
     @Path("/editora/{editoraId}")

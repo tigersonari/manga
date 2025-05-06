@@ -1,3 +1,5 @@
+//OK
+
 package br.manga.resource;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -21,14 +23,15 @@ public class AdminResourceTest {
     @Test
     void testFindByPermissao() {
         given()
-            .when().get("/admins/permissao/GERENTE")
+            .when().get("/admins/permissao/FULL_ACCESS")
             .then()
             .statusCode(200);
     }
 
+
     @Test
     void testCreate() {
-        AdminDTO dto = new AdminDTO(null, "admin1", "senha123", "GERENTE", "additionalField");
+        AdminDTO dto = new AdminDTO("admin1", "admin1@gmail.com", "senha123", "Rua 23o3", "FULL_ACCESS");
 
         given()
             .contentType(ContentType.JSON)
@@ -38,16 +41,16 @@ public class AdminResourceTest {
             .statusCode(201)
             .body("id", notNullValue())
             .body("nome", equalTo("admin1"))
-            .body("permissao", equalTo("GERENTE"));
+            .body("permissao", equalTo("FULL_ACCESS"));
     }
 
     @Test
     void testUpdate() {
         
-        AdminDTO dto = new AdminDTO(null, "admin2", "senha456", "ATENDENTE", "additionalField");
+        AdminDTO dto = new AdminDTO("admin2", "admin2@gmail.com", "senha123", "Rua 23owa3", "FULL_ACCESS");
         Long id = adminService.create(dto).id();
 
-        AdminDTO atualizado = new AdminDTO(null, "admin2_upd", "senha789", "GERENTE", "additionalField");
+        AdminDTO atualizado = new AdminDTO("admin2", "admin2UPDATED@gmail.com", "senha123", "Rua 23owa3", "FULL_ACCESS");
 
         given()
             .contentType(ContentType.JSON)
@@ -60,7 +63,7 @@ public class AdminResourceTest {
     @Test
     void testDelete() {
         
-        AdminDTO dto = new AdminDTO(null, "admin3", "senha321", "SUPERVISOR", "additionalField");
+        AdminDTO dto = new AdminDTO("admin3", "admin3@gmail.com", "senha123", "Rua 23owa3", "FULL_ACCESS");;
         Long id = adminService.create(dto).id();
 
         given()
